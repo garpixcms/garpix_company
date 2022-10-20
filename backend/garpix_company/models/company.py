@@ -83,7 +83,7 @@ class AbstractCompany(models.Model):
 
 def get_company_model():
     """
-    Return the User model that is active in this project.
+    Return the Company model that is active in this project.
     """
     try:
         return django_apps.get_model(settings.GARPIX_COMPANY_MODEL, require_ready=False)
