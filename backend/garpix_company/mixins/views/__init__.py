@@ -1,0 +1,1 @@
+from .company_mixin import GarpixCompanyViewSetMixin

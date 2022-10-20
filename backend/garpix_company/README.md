@@ -51,11 +51,11 @@ See `garpix_vacancy/tests/test_company.py` for examples.
 
 # Changelog
 
-Смотри [CHANGELOG.md](backend/garpix_company/CHANGELOG.md).
+Смотри [CHANGELOG.md](CHANGELOG.md).
 
 # Contributing
 
-Смотри [CONTRIBUTING.md](backend/garpix_company/CONTRIBUTING.md).
+Смотри [CONTRIBUTING.md](CONTRIBUTING.md).
 
 # License
 
