@@ -20,24 +20,33 @@ class AdminCompanySerializerMixin(serializers.Serializer):
                     return user_company.is_admin
         return False
 
+    def get_field_names(self, declared_fields, info):
+        expanded_fields = super().get_field_names(declared_fields, info)
+
+        if getattr(self.Meta, 'extra_fields', None):
+            return expanded_fields + self.Meta.extra_fields
+        else:
+            return expanded_fields
+
 
 class CompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = (
-            'id', 'title', 'full_title', 'inn', 'ogrn',
-            'kpp', 'bank_title', 'bic', 'schet', 'korschet',
-            'ur_address', 'fact_address', 'is_admin'
-        )
+        exclude = ('participants',)
+        extra_fields = ['is_admin']
 
 
 class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ('id', 'title', 'full_title', 'inn', 'ogrn', 'kpp', 'bank_title', 'bic', 'schet', 'korschet',
-                  'ur_address', 'fact_address', 'is_admin')
+        exclude = ('participants',)
+        extra_fields = ['is_admin']
+        extra_kwargs = {
+            'created_at': {'read_only': True},
+            'updated_at': {'read_only': True}
+        }
 
     def create(self, validated_data):
         with transaction.atomic():
@@ -48,17 +57,7 @@ class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSeri
                 user = request.user
             # creating
             obj = Company(
-                title=validated_data['title'],
-                full_title=validated_data['full_title'],
-                inn=validated_data['inn'],
-                ogrn=validated_data['ogrn'],
-                kpp=validated_data['kpp'],
-                bank_title=validated_data['bank_title'],
-                bic=validated_data['bic'],
-                schet=validated_data['schet'],
-                korschet=validated_data['korschet'],
-                ur_address=validated_data['ur_address'],
-                fact_address=validated_data['fact_address'],
+                **validated_data
             )
             obj.save()
             user_company = UserCompany(user=user, company=obj, is_admin=True)

@@ -47,6 +47,39 @@ urlpatterns = [
 ]
 ```
 
+Add Company model to your project using abstract `AbstractCompany` from the model:
+```python
+from garpix_company.models import AbstractCompany
+
+
+class Company(AbstractCompany):
+    pass
+
+```
+
+Add `GARPIX_COMPANY_MODEL` to `settings.py`:
+
+```python
+# settings.py
+
+GARPIX_COMPANY_MODEL = 'app.Company'
+
+```
+
+Use `CompanyAdmin` as base in your admin panel:
+```python
+from django.contrib import admin
+
+from app.models import Company
+from garpix_company.admin import CompanyAdmin
+
+
+@admin.register(Company)
+class CompanyAdmin(CompanyAdmin):
+    pass
+
+```
+
 See `garpix_vacancy/tests/test_company.py` for examples.
 
 # Changelog
