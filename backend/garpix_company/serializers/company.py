@@ -1,0 +1,74 @@
+from django.db import transaction
+from rest_framework import serializers
+
+from garpix_company.models.company import get_company_model
+from garpix_company.models.user_company import UserCompany
+
+Company = get_company_model()
+
+
+class AdminCompanySerializerMixin(serializers.Serializer):
+    is_admin = serializers.SerializerMethodField(read_only=True)
+
+    def get_is_admin(self, obj):
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+            if user.is_authenticated:
+                user_company = UserCompany.objects.filter(user=user, company=obj).first()
+                if user_company is not None:
+                    return user_company.is_admin
+        return False
+
+    def get_field_names(self, declared_fields, info):
+        expanded_fields = super().get_field_names(declared_fields, info)
+
+        if getattr(self.Meta, 'extra_fields', None):
+            return expanded_fields + self.Meta.extra_fields
+        else:
+            return expanded_fields
+
+
+class CompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = Company
+        exclude = ('participants',)
+        extra_fields = ['is_admin']
+
+
+class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer):
+
+    class Meta:
+        model = Company
+        exclude = ('participants',)
+        extra_fields = ['is_admin']
+        extra_kwargs = {
+            'created_at': {'read_only': True},
+            'updated_at': {'read_only': True}
+        }
+
+    def create(self, validated_data):
+        with transaction.atomic():
+            # getting user
+            user = None
+            request = self.context.get("request")
+            if request and hasattr(request, "user"):
+                user = request.user
+            # creating
+            obj = Company(
+                **validated_data
+            )
+            obj.save()
+            user_company = UserCompany(user=user, company=obj, is_admin=True)
+            user_company.save()
+        return obj
+
+
+class UpdateCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = (
+            'title', 'full_title', 'inn', 'ogrn', 'kpp', 'bank_title',
+            'bic', 'schet', 'korschet', 'ur_address', 'fact_address'
+        )
