@@ -4,14 +4,17 @@ from m2r import convert
 from django.conf import settings
 
 
-with open(path.join(settings.BASE_DIR, '..', 'README.md'), encoding='utf-8') as f:
-    long_description = convert(f.read())
+here = path.join(path.abspath(path.dirname(__file__)), 'garpix_company')
+
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='garpix_company',
-    version='1.0.0',
+    version='1.0.0-rc1',
     description='',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/garpixcms/garpix_company',
     author='Garpix LTD',
     author_email='info@garpix.com',
