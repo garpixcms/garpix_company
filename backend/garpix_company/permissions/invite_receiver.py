@@ -10,7 +10,4 @@ class CompanyInviteReceiverOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        print(request.user.email)
-        print(obj.email)
-
         return request.user.is_authenticated and request.user.email == obj.email

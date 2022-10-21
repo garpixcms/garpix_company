@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers
 
 from garpix_company.models.company import get_company_model
@@ -8,7 +9,7 @@ from garpix_company.models.user_company import UserCompany
 Company = get_company_model()
 
 
-class InviteToCompanySerializer(serializers.HyperlinkedModelSerializer):
+class InviteToCompanySerializer(serializers.ModelSerializer):
     company_id = serializers.IntegerField(required=True, help_text="ID компании")
 
     class Meta:
@@ -20,18 +21,19 @@ class InviteToCompanySerializer(serializers.HyperlinkedModelSerializer):
         user = None
         request = self.context.get("request")
         if request and hasattr(request, "user") and request.user.is_authenticated:
-            user = request.user
-            company = Company.objects.get(id=validated_data['company_id'])
-            try:
-                UserCompany.objects.get(company=company, user=user, is_admin=True)
-                # creating
-                obj = InviteToCompany(
-                    email=validated_data['email'],
-                    company_id=validated_data['company_id'],
-                    is_admin=validated_data['is_admin']
-                )
-                obj.save()
-                return obj
-            except UserCompany.DoesNotExist:
-                pass
+            with transaction.atomic():
+                user = request.user
+                company = Company.objects.get(id=validated_data['company_id'])
+                try:
+                    UserCompany.objects.get(company=company, user=user, is_admin=True)
+                    # creating
+                    obj = InviteToCompany(
+                        email=validated_data['email'],
+                        company_id=validated_data['company_id'],
+                        is_admin=validated_data['is_admin']
+                    )
+                    obj.save()
+                    return obj
+                except UserCompany.DoesNotExist:
+                    pass
         return None

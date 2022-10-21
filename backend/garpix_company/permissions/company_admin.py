@@ -20,5 +20,5 @@ class CompanyAdminOnly(permissions.BasePermission):
         if isinstance(obj, UserCompany):
             return request.user.is_authenticated and request.user == obj.user
         if isinstance(obj, InviteToCompany):
-            return request.user.is_authenticated and request.user.id in obj.company.usercompany_set.filter(
-                is_admin=True).values_list('user', flat=True)
+            return request.user.is_authenticated and obj.company.usercompany_set.filter(
+                is_admin=True, user=request.user)

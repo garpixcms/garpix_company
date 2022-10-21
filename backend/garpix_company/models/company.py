@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from django_fsm import FSMField, transition, can_proceed
 from django.contrib.auth import get_user_model
 
-from garpix_company.helpers import COMPANY_STATUS
+from garpix_company.helpers import COMPANY_STATUS_ENUM
 from garpix_company.managers.company import CompanyActiveManager
 
 from django.conf import settings
@@ -17,6 +17,8 @@ class AbstractCompany(models.Model):
     """
     Данные о компании.
     """
+
+    COMPANY_STATUS = COMPANY_STATUS_ENUM
 
     title = models.CharField(max_length=255, verbose_name=_('Название'))
     full_title = models.CharField(max_length=255, verbose_name=_('Полное название'))

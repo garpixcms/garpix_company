@@ -8,7 +8,7 @@ class UserCompanyInline(admin.TabularInline):
     extra = 0
 
 
-class AbstractCompanyAdmin(admin.ModelAdmin):
+class CompanyAdmin(admin.ModelAdmin):
     list_display = ('title', 'created_at')
     readonly_fields = ('created_at', )
     inlines = (UserCompanyInline,)

@@ -1,7 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 
 
-class COMPANY_STATUS:
+class COMPANY_STATUS_ENUM:
     ACTIVE = 'active'
     BANNED = 'banned'
     DELETED = 'deleted'
@@ -13,12 +13,12 @@ class COMPANY_STATUS:
     )
 
 
-class CHOICES_INVITE_STATUS:
+class CHOICES_INVITE_STATUS_ENUM:
     CREATED = 'created'
     ACCEPTED = 'accepted'
     DECLINED = 'declined'
     CHOICES = (
-        (CREATED, 'Создан'),
-        (ACCEPTED, 'Принят'),
-        (DECLINED, 'Отвергнут')
+        (CREATED, _('Создан')),
+        (ACCEPTED, _('Принят')),
+        (DECLINED, _('Отвергнут'))
     )

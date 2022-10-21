@@ -8,7 +8,7 @@ from django_fsm import FSMField, transition, can_proceed
 from garpix_notify.models import Notify
 from garpix_utils.string import get_random_string
 
-from garpix_company.helpers import CHOICES_INVITE_STATUS
+from garpix_company.helpers import CHOICES_INVITE_STATUS_ENUM
 from garpix_company.managers.invite import CreatedInviteManager
 from garpix_company.models.company import get_company_model
 from garpix_company.models.user_company import UserCompany
@@ -18,6 +18,8 @@ Company = get_company_model()
 
 
 class InviteToCompany(models.Model):
+
+    CHOICES_INVITE_STATUS = CHOICES_INVITE_STATUS_ENUM
 
     company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name=_('Компания'))
     email = models.EmailField(verbose_name=_('E-mail инвайта'))
@@ -37,15 +39,11 @@ class InviteToCompany(models.Model):
     @transition(field=status, source=CHOICES_INVITE_STATUS.CREATED, target=CHOICES_INVITE_STATUS.ACCEPTED)
     def _in_accept(self, user):
 
-        try:
-            with transaction.atomic():
-                UserCompany.objects.create(
-                    company=self.company,
-                    user=user,
-                    is_admin=self.is_admin
-                )
-        except IntegrityError:
-            pass
+        UserCompany.objects.create(
+            company=self.company,
+            user=user,
+            is_admin=self.is_admin
+        )
 
     @transition(field=status, source=CHOICES_INVITE_STATUS.CREATED, target=CHOICES_INVITE_STATUS.DECLINED)
     def _in_decline(self):
@@ -65,12 +63,15 @@ class InviteToCompany(models.Model):
         :return:
         """
         try:
-            user = User.objects.get(email=self.email)
-            self._in_accept(user)
-            self.save()
+            with transaction.atomic():
+                user = User.objects.get(email=self.email)
+                self._in_accept(user)
+                self.save()
             return True, None
         except User.DoesNotExist:
             return False, _('Пользователь с таким email не зарегистрирован')
+        except IntegrityError:
+            return False, _('Не удалось принять приглашение. Попробуйте позже')
 
     def decline(self):
         """

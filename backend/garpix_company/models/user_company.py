@@ -24,6 +24,10 @@ class UserCompany(models.Model):
         verbose_name_plural = _('Пользователи компании')
 
     def set_admin(self, by_user_id):
+        if self.is_blocked:
+            return False, _('Нельзя сделать администратором заблокированного польхователя')
+        if self.is_admin:
+            return False, _('Пользователь уже является администратором выбранной компании')
         try:
             UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
             self.is_admin = True
