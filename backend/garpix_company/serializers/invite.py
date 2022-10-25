@@ -63,8 +63,9 @@ class CreateAndInviteToCompanySerializer(serializers.ModelSerializer):
                     }
                     if 'username' not in validated_data.keys():
                         validated_data['username'] = get_random_string(25)
-                    get_user_model().objects.create_user(password=get_random_string(8),
-                                                         **validated_data)
+                    if 'password' not in validated_data.keys():
+                        validated_data['password'] = get_random_string(8)
+                    get_user_model().objects.create_user(**validated_data)
                     obj = InviteToCompany(**invite_data)
                     obj.save()
                     return obj
