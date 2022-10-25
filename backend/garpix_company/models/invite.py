@@ -90,3 +90,6 @@ class InviteToCompany(models.Model):
                 'company_title': str(self.company),
             }, email=str(self.email))
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'Инвайт в компанию {str(self.company)} для {self.email}'

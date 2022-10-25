@@ -80,6 +80,36 @@ class CompanyAdmin(CompanyAdmin):
 
 ```
 
+## Invite and create user
+
+You can add fields to `company_invite/create_and_invite` endpoint.  
+
+To do it override `CreateAndInviteToCompanySerializer` by adding field and add it to `settings`:
+
+```python
+# settings.py
+
+GARPIX_COMPANY_CREATE_AND_INVITE_SERIALIZER = 'app.serializers.CustomInviteCompanySerializer'
+
+```
+
+```python
+# app.serializers.py
+
+from rest_framework import serializers
+
+from garpix_company.serializers import CreateAndInviteToCompanySerializer
+
+
+class CustomInviteCompanySerializer(CreateAndInviteToCompanySerializer):
+    username = serializers.CharField(write_only=True)
+
+    class Meta(CreateAndInviteToCompanySerializer.Meta):
+        fields = CreateAndInviteToCompanySerializer.Meta.fields + ('username',)
+
+
+```
+
 See `garpix_vacancy/tests/test_company.py` for examples.
 
 # Changelog

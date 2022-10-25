@@ -1,7 +1,5 @@
 from setuptools import setup, find_packages
 from os import path
-from m2r import convert
-from django.conf import settings
 
 
 here = path.join(path.abspath(path.dirname(__file__)), 'garpix_company')
@@ -11,7 +9,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='garpix_company',
-    version='1.0.0-rc1',
+    version='1.0.0-rc2',
     description='',
     long_description=long_description,
     long_description_content_type='text/markdown',
