@@ -84,7 +84,7 @@ class CompanyAdmin(CompanyAdmin):
 
 You can add fields to `company_invite/create_and_invite` endpoint.  
 
-To do it override `CreateAndInviteToCompanySerializer` and add it to `settings`:
+To do it override `CreateAndInviteToCompanySerializer` by adding field and add it to `settings`:
 
 ```python
 # settings.py
