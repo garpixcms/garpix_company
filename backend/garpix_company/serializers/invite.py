@@ -49,6 +49,7 @@ class CreateAndInviteToCompanySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
+        User = get_user_model()
         request = self.context.get("request")
         if request and hasattr(request, "user") and request.user.is_authenticated:
             with transaction.atomic():
@@ -64,8 +65,8 @@ class CreateAndInviteToCompanySerializer(serializers.ModelSerializer):
                     if 'username' not in validated_data.keys():
                         validated_data['username'] = get_random_string(25)
                     if 'password' not in validated_data.keys():
-                        validated_data['password'] = get_random_string(8)
-                    get_user_model().objects.create_user(**validated_data)
+                        validated_data['password'] = User.objects.make_random_password()
+                    User.objects.create_user(**validated_data)
                     obj = InviteToCompany(**invite_data)
                     obj.save()
                     return obj
