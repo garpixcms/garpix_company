@@ -52,4 +52,6 @@ CHOICES_NOTIFY_EVENT = [(k, v['title']) for k, v in NOTIFY_EVENTS.items()]
 
 GARPIX_COMPANY_MODEL = 'app.Company'
 
+GARPIX_COMPANY_CREATE_AND_INVITE_SERIALIZER = 'app.serializers.CustomInviteCompanySerializer'
+
 SITE_URL = '127.0.0.1:8000'
