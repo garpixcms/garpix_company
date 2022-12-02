@@ -110,28 +110,6 @@ class CustomInviteCompanySerializer(CreateAndInviteToCompanySerializer):
 
 ```
 
-## Permissions
-
-If you need to add custom permissions on company endpoints, you can override `action_permissions` class method of `Company` model:
-
-```python
-from garpix_company.models import AbstractCompany
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly
-
-class Company(AbstractCompany):
-
-    @classmethod
-    def action_permissions(cls):
-        return {'create': [IsAuthenticated],
-                'retrieve': [AllowAny],
-                'list': [AllowAny],
-                'update': [IsAdminUser | CompanyAdminOnly],
-                'partial_update': [IsAdminUser | CompanyAdminOnly],
-                'destroy': [IsAdminUser | CompanyAdminOnly],
-                'change_owner': [IsAdminUser | CompanyOwnerOnly]}
-```
-
 See `garpix_company/tests/test_company.py` for examples.
 
 

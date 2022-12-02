@@ -1,6 +1,5 @@
 ### 1.0.0-rc3 (02.12.2022)
 
-- Custom permissions for company endpoints added (see `Readme.md`);
 - `owner` field added to `Company` model.
 
 ### 1.0.0-rc2 (25.10.2022)

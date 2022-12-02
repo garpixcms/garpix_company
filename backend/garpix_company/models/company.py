@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django_fsm import FSMField, transition, can_proceed
 from django.contrib.auth import get_user_model
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 
 from garpix_company.helpers import COMPANY_STATUS_ENUM
 from garpix_company.managers.company import CompanyActiveManager
@@ -42,17 +41,6 @@ class AbstractCompany(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Дата изменения'))
     objects = models.Manager()
     active_objects = CompanyActiveManager()
-
-    @classmethod
-    def action_permissions(cls):
-        from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly
-        return {'create': [IsAuthenticated],
-                'retrieve': [AllowAny],
-                'list': [AllowAny],
-                'update': [IsAdminUser | CompanyAdminOnly],
-                'partial_update': [IsAdminUser | CompanyAdminOnly],
-                'destroy': [IsAdminUser | CompanyAdminOnly],
-                'change_owner': [IsAdminUser | CompanyOwnerOnly]}
 
     class Meta:
         verbose_name = _('Компания')

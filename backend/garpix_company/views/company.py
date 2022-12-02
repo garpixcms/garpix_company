@@ -14,12 +14,17 @@ Company = get_company_model()
 
 
 class CompanyViewSet(ModelViewSet, GarpixCompanyViewSetMixin):
-
     permission_classes = [IsAuthenticated]
     queryset = Company.active_objects.all()
     serializer_class = CompanySerializer
     http_method_names = ['get', 'post', 'patch', 'head', 'options', 'delete']
-    permission_classes_by_action = Company.action_permissions()
+    permission_classes_by_action = {'create': [IsAuthenticated],
+                                    'retrieve': [AllowAny],
+                                    'list': [AllowAny],
+                                    'update': [IsAdminUser | CompanyAdminOnly],
+                                    'partial_update': [IsAdminUser | CompanyAdminOnly],
+                                    'destroy': [IsAdminUser | CompanyAdminOnly],
+                                    'change_owner': [IsAdminUser | CompanyOwnerOnly]}
 
     def get_permissions(self):
         try:
