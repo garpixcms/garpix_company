@@ -20,4 +20,3 @@ class CompanyOwnerOnly(permissions.BasePermission):
             return request.user.is_authenticated and request.user == obj.company.owner
         if isinstance(obj, InviteToCompany):
             return request.user.is_authenticated and request.user == obj.company.owner
-
