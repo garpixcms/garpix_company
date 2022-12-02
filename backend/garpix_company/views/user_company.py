@@ -21,7 +21,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin, ReadOnlyModelViewSet):
     @action(methods=['POST'], detail=True)
     def block(self, request, *args, **kwargs):
         instance = self.get_object()
-        result, message = instance.block()
+        result, message = instance.block(request.user.id)
         if result:
             return Response({'status': _('Пользователь успешно заблокирован')}, status=status.HTTP_200_OK)
         return Response({"non_field_error": [message]}, status=status.HTTP_400_BAD_REQUEST)
@@ -29,7 +29,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin, ReadOnlyModelViewSet):
     @action(methods=['POST'], detail=True)
     def unblock(self, request, *args, **kwargs):
         instance = self.get_object()
-        result, message = instance.unblock()
+        result, message = instance.unblock(request.user.id)
         if result:
             return Response({'status': _('Пользователь успешно разблокирован')}, status=status.HTTP_200_OK)
         return Response({"non_field_error": [message]}, status=status.HTTP_400_BAD_REQUEST)
@@ -37,7 +37,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin, ReadOnlyModelViewSet):
     @action(methods=['POST'], detail=True)
     def set_admin(self, request, *args, **kwargs):
         instance = self.get_object()
-        result, message = instance.set_admin()
+        result, message = instance.set_admin(request.user.id)
         if result:
             return Response({'status': _('Пользователь успешно назначен админом')}, status=status.HTTP_200_OK)
         return Response({"non_field_error": [message]}, status=status.HTTP_400_BAD_REQUEST)
@@ -45,7 +45,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin, ReadOnlyModelViewSet):
     @action(methods=['POST'], detail=True)
     def unset_admin(self, request, *args, **kwargs):
         instance = self.get_object()
-        result, message = instance.unset_admin()
+        result, message = instance.unset_admin(request.user.id)
         if result:
             return Response({'status': _('Пользователь больше не админ')}, status=status.HTTP_200_OK)
         return Response({"non_field_error": [message]}, status=status.HTTP_400_BAD_REQUEST)

@@ -14,14 +14,13 @@ from garpix_company.models.company import get_company_model
 from garpix_company.models.user_company import UserCompany
 
 User = get_user_model()
-Company = get_company_model()
 
 
 class InviteToCompany(models.Model):
 
     CHOICES_INVITE_STATUS = CHOICES_INVITE_STATUS_ENUM
 
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name=_('Компания'))
+    company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, on_delete=models.CASCADE, verbose_name=_('Компания'))
     email = models.EmailField(verbose_name=_('E-mail инвайта'))
     is_admin = models.BooleanField(default=False, verbose_name=_('Администратор компании'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
@@ -82,6 +81,7 @@ class InviteToCompany(models.Model):
         self.save()
 
     def save(self, *args, **kwargs):
+        Company = get_company_model()
         is_new = self.pk is None
         if is_new:
             self.token = get_random_string(16)

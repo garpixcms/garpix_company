@@ -32,6 +32,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'garpixcms >= 3.43.0',
-        'drf-nested-routers == 0.93.4'
+        'drf-nested-routers == 0.93.4',
+        'django-fsm >= 2.8.1'
     ],
 )

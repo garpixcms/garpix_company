@@ -1,11 +1,9 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from garpix_company.models.company import get_company_model
-
 User = get_user_model()
-Company = get_company_model()
 
 
 class UserCompany(models.Model):
@@ -13,7 +11,7 @@ class UserCompany(models.Model):
     Модель участников. Связка между компанией и пользователем.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='usercompany')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
     is_admin = models.BooleanField(default=False, verbose_name=_("Администратор компании"))
     is_blocked = models.BooleanField(default=False, verbose_name=_("Заблокирован администратором компании"))
@@ -25,7 +23,7 @@ class UserCompany(models.Model):
 
     def set_admin(self, by_user_id):
         if self.is_blocked:
-            return False, _('Нельзя сделать администратором заблокированного польхователя')
+            return False, _('Нельзя сделать администратором заблокированного пользователя')
         if self.is_admin:
             return False, _('Пользователь уже является администратором выбранной компании')
         try:
@@ -49,6 +47,8 @@ class UserCompany(models.Model):
                 self.is_admin = False
                 self.save()
                 return True, None
+            else:
+                return False, _('Лишить себя админства нельзя')
         except UserCompany.DoesNotExist:
             return False, _('Действие доступно только для администратора компании')
 
@@ -58,6 +58,8 @@ class UserCompany(models.Model):
         :param by_user_id: ID пользователя, который хочет заблокировать
         :return:
         """
+        if self.company.owner == self.user:
+            return False, _('Нельзя заблокировать владельца компании')
         try:
             UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
             if not self.is_admin:
