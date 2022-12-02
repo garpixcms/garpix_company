@@ -1,3 +1,7 @@
+### 1.0.0-rc3 (02.12.2022)
+
+- `owner` field added to `Company` model.
+
 ### 1.0.0-rc2 (25.10.2022)
 
 - Invite and create user endpoint added (see `Readme.md`);

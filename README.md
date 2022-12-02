@@ -110,7 +110,8 @@ class CustomInviteCompanySerializer(CreateAndInviteToCompanySerializer):
 
 ```
 
-See `garpix_vacancy/tests/test_company.py` for examples.
+See `garpix_company/tests/test_company.py` for examples.
+
 
 # Changelog
 

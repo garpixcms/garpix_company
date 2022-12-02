@@ -1,8 +1,10 @@
 from django.db import transaction
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from garpix_company.models.company import get_company_model
 from garpix_company.models.user_company import UserCompany
+from django.utils.translation import ugettext_lazy as _
 
 Company = get_company_model()
 
@@ -55,8 +57,11 @@ class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSeri
             request = self.context.get("request")
             if request and hasattr(request, "user"):
                 user = request.user
+            else:
+                raise ValidationError(_("Необходима авторизация"))
             # creating
             obj = Company(
+                owner=user,
                 **validated_data
             )
             obj.save()
@@ -72,3 +77,7 @@ class UpdateCompanySerializer(serializers.ModelSerializer):
             'title', 'full_title', 'inn', 'ogrn', 'kpp', 'bank_title',
             'bic', 'schet', 'korschet', 'ur_address', 'fact_address'
         )
+
+
+class ChangeOwnerCompanySerializer(serializers.Serializer):
+    new_owner = serializers.IntegerField()

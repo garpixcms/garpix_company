@@ -9,7 +9,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='garpix_company',
-    version='1.0.0-rc2',
+    version='1.0.0-rc3',
     description='',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -32,6 +32,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'garpixcms >= 3.43.0',
-        'drf-nested-routers == 0.93.4'
+        'drf-nested-routers == 0.93.4',
+        'django-fsm >= 2.8.1'
     ],
 )
