@@ -41,7 +41,7 @@ Add to `urls.py`:
 # ...
 urlpatterns = [
     # ...
-    # garpix_user
+    # garpix_company
     path('', include(('garpix_company.urls', 'garpix_company'), namespace='garpix_company')),
 
 ]
@@ -57,12 +57,24 @@ class Company(AbstractCompany):
 
 ```
 
-Add `GARPIX_COMPANY_MODEL` to `settings.py`:
+Add UserCompanyRole model to your project using abstract `AbstractUserCompanyRole` from the model:
+```python
+from garpix_company.models import AbstractUserCompanyRole
+
+
+class UserCompanyRole(AbstractUserCompanyRole):
+    pass
+
+
+```
+
+Add `GARPIX_COMPANY_MODEL` and `GARPIX_COMPANY_ROLE_MODEL` to `settings.py`:
 
 ```python
 # settings.py
 
 GARPIX_COMPANY_MODEL = 'app.Company'
+GARPIX_COMPANY_ROLE_MODEL = 'app.UserCompanyRole'
 
 ```
 

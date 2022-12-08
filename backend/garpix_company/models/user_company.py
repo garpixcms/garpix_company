@@ -15,6 +15,8 @@ class UserCompany(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
     is_admin = models.BooleanField(default=False, verbose_name=_("Администратор компании"))
     is_blocked = models.BooleanField(default=False, verbose_name=_("Заблокирован администратором компании"))
+    role = models.ForeignKey(settings.GARPIX_COMPANY_ROLE_MODEL, null=True, on_delete=models.SET_NULL,
+                             verbose_name=_('Роль в компании'))
 
     class Meta:
         unique_together = ("user", "company")
@@ -79,6 +81,23 @@ class UserCompany(models.Model):
             UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
             self.is_blocked = False
             self.save()
+            return True, None
+        except UserCompany.DoesNotExist:
+            return False, _('Действие доступно только для администратора компании')
+
+    def kick(self, by_user_id):
+        """
+        Удалить участника в компании
+        :param by_user_id: ID пользователя, который хочет заблокировать
+        :return:
+        """
+        if self.company.owner == self.user:
+            return False, _('Нельзя удалить владельца компании')
+        if self.is_admin:
+            return False, _('Нельзя удалить администратора компании')
+        try:
+            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
+            self.delete()
             return True, None
         except UserCompany.DoesNotExist:
             return False, _('Действие доступно только для администратора компании')
