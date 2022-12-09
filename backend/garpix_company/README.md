@@ -122,6 +122,22 @@ class CustomInviteCompanySerializer(CreateAndInviteToCompanySerializer):
 
 ```
 
+## Companies count limit
+
+If you need to add some limitations on companies count the user can be a part of, you can override `check_user_companies_limit` class method of `Company` class:
+
+```python
+from garpix_company.models import AbstractCompany, UserCompany
+
+
+class Company(AbstractCompany):
+
+    @classmethod
+    def check_user_companies_limit(cls, user):
+        return UserCompany.objects.filter(user=user).count() < 1
+
+```
+
 See `garpix_company/tests/test_company.py` for examples.
 
 # Changelog
