@@ -1,3 +1,8 @@
+### 1.0.0-rc4 (08.12.2022)
+
+- `destroy` action added to `UerCompany` view.
+- `AbstractUserCompanyRole` model added (see `Readme.md`).
+
 ### 1.0.0-rc3 (02.12.2022)
 
 - `owner` field added to `Company` model.

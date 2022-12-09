@@ -97,6 +97,10 @@ class AbstractCompany(models.Model):
             return False, _('Пользователь с указанным id не является сотрудником компании')
 
     @classmethod
+    def check_user_companies_limit(cls, user):
+        return True
+
+    @classmethod
     def invite_confirmation_link(cls, token):
         return f'{settings.SITE_URL}invite/{token}'
 

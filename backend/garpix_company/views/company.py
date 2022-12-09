@@ -13,7 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 Company = get_company_model()
 
 
-class CompanyViewSet(ModelViewSet, GarpixCompanyViewSetMixin):
+class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Company.active_objects.all()
     serializer_class = CompanySerializer
@@ -21,10 +21,10 @@ class CompanyViewSet(ModelViewSet, GarpixCompanyViewSetMixin):
     permission_classes_by_action = {'create': [IsAuthenticated],
                                     'retrieve': [AllowAny],
                                     'list': [AllowAny],
-                                    'update': [IsAdminUser | CompanyAdminOnly],
-                                    'partial_update': [IsAdminUser | CompanyAdminOnly],
-                                    'destroy': [IsAdminUser | CompanyAdminOnly],
-                                    'change_owner': [IsAdminUser | CompanyOwnerOnly]}
+                                    'update': [IsAdminUser, CompanyAdminOnly],
+                                    'partial_update': [IsAdminUser, CompanyAdminOnly],
+                                    'destroy': [IsAdminUser, CompanyAdminOnly],
+                                    'change_owner': [IsAdminUser, CompanyOwnerOnly]}
 
     def get_permissions(self):
         try:

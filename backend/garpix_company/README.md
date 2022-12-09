@@ -41,7 +41,7 @@ Add to `urls.py`:
 # ...
 urlpatterns = [
     # ...
-    # garpix_user
+    # garpix_company
     path('', include(('garpix_company.urls', 'garpix_company'), namespace='garpix_company')),
 
 ]
@@ -57,12 +57,24 @@ class Company(AbstractCompany):
 
 ```
 
-Add `GARPIX_COMPANY_MODEL` to `settings.py`:
+Add UserCompanyRole model to your project using abstract `AbstractUserCompanyRole` from the model:
+```python
+from garpix_company.models import AbstractUserCompanyRole
+
+
+class UserCompanyRole(AbstractUserCompanyRole):
+    pass
+
+
+```
+
+Add `GARPIX_COMPANY_MODEL` and `GARPIX_COMPANY_ROLE_MODEL` to `settings.py`:
 
 ```python
 # settings.py
 
 GARPIX_COMPANY_MODEL = 'app.Company'
+GARPIX_COMPANY_ROLE_MODEL = 'app.UserCompanyRole'
 
 ```
 
@@ -107,6 +119,22 @@ class CustomInviteCompanySerializer(CreateAndInviteToCompanySerializer):
     class Meta(CreateAndInviteToCompanySerializer.Meta):
         fields = CreateAndInviteToCompanySerializer.Meta.fields + ('username',)
 
+
+```
+
+## Companies count limit
+
+If you need to add some limitations on companies count the user can be a part of, you can override `check_user_companies_limit` class method of `Company` class:
+
+```python
+from garpix_company.models import AbstractCompany, UserCompany
+
+
+class Company(AbstractCompany):
+
+    @classmethod
+    def check_user_companies_limit(cls, user):
+        return UserCompany.objects.filter(user=user).count() < 1
 
 ```
 
