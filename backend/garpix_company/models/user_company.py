@@ -10,7 +10,7 @@ class UserCompany(models.Model):
     """
     Модель участников. Связка между компанией и пользователем.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='usercompany')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='usercompany', verbose_name=_('Пользователь'))
     company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
     is_admin = models.BooleanField(default=False, verbose_name=_("Администратор компании"))
