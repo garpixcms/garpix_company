@@ -1,3 +1,7 @@
+### 1.0.0 (26.12.2022)
+
+- Release to pypi.org
+
 ### 1.0.0-rc5 (26.12.2022)
 
 - Admin panel changes
