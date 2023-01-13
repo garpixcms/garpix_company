@@ -1,3 +1,7 @@
+### 1.0.1 (13.01.2023)
+
+- Fixed bug with company creation endpoint
+
 ### 1.0.0 (26.12.2022)
 
 - Release to pypi.org

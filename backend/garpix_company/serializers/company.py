@@ -43,7 +43,7 @@ class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSeri
 
     class Meta:
         model = Company
-        exclude = ('participants',)
+        exclude = ('participants', 'owner')
         extra_fields = ['is_admin']
         extra_kwargs = {
             'created_at': {'read_only': True},
