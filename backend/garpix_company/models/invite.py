@@ -27,6 +27,8 @@ class InviteToCompany(models.Model):
     token = models.CharField(max_length=16, verbose_name=_("Код подтверждения добавления"))
     status = FSMField(choices=CHOICES_INVITE_STATUS.CHOICES, default=CHOICES_INVITE_STATUS.CREATED,
                       verbose_name=_("Статус инвайта"))
+    role = models.ForeignKey(settings.GARPIX_COMPANY_ROLE_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
+                             verbose_name=_('Роль в компании'))
     objects = models.Manager()
     created_objects = CreatedInviteManager()
 

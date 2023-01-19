@@ -1,3 +1,10 @@
+### 1.1.0 (19.01.2023)
+
+- Fixed bug with permissions
+- `role` field added to `InviteToCompany`
+- Searching added to GET `company/{pk}/user/` endpoint
+- `company/{pk}/invites/` endpoint added.
+
 ### 1.0.1 (13.01.2023)
 
 - Fixed bug with company creation endpoint

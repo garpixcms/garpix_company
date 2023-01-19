@@ -6,16 +6,14 @@ from rest_framework.exceptions import ValidationError
 
 from garpix_company.models.company import get_company_model
 from garpix_company.models.invite import InviteToCompany
-from garpix_company.models.user_company import UserCompany
 from django.utils.translation import ugettext_lazy as _
 
 
 class InviteToCompanySerializer(serializers.ModelSerializer):
-    company_id = serializers.IntegerField(required=True, help_text="ID компании")
 
     class Meta:
         model = InviteToCompany
-        fields = ('company_id', 'email', 'is_admin')
+        fields = ('email', 'is_admin', 'role')
 
     def validate_email(self, value):
         User = get_user_model()
@@ -33,17 +31,15 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
         # getting user
         user = None
         request = self.context.get("request")
+        company_id = self.context.get("company_id")
         if request and hasattr(request, "user") and request.user.is_authenticated:
             with transaction.atomic():
-                try:
-                    company = Company.objects.get(id=validated_data['company_id'])
-                except Company.DoesNotExist:
-                    raise ValidationError({'company_id': [_('Компания с указанным id не зарегистрирована')]})
                 # creating
                 obj = InviteToCompany(
                     email=validated_data['email'],
-                    company_id=validated_data['company_id'],
-                    is_admin=validated_data['is_admin']
+                    company_id=company_id,
+                    is_admin=validated_data['is_admin'],
+                    role=validated_data.get('role', None)
                 )
                 obj.save()
                 return obj
@@ -51,11 +47,10 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
 
 
 class CreateAndInviteToCompanySerializer(serializers.ModelSerializer):
-    company_id = serializers.IntegerField(required=True, help_text="ID компании")
 
     class Meta:
         model = InviteToCompany
-        fields = ('company_id', 'email', 'is_admin')
+        fields = ('email', 'is_admin', 'role')
 
     def validate_email(self, value):
         User = get_user_model()
@@ -64,19 +59,16 @@ class CreateAndInviteToCompanySerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        Company = get_company_model()
         User = get_user_model()
         request = self.context.get("request")
+        company_id = self.context.get("company_id")
         if request and hasattr(request, "user") and request.user.is_authenticated:
             with transaction.atomic():
-                try:
-                    company = Company.objects.get(id=validated_data['company_id'])
-                except Company.DoesNotExist:
-                    raise ValidationError({'company_id': [_('Компания с указанным id не зарегистрирована')]})
                 invite_data = {
                     'email': validated_data['email'],
-                    'company_id': validated_data.pop('company_id'),
-                    'is_admin': validated_data.pop('is_admin')
+                    'company_id': company_id,
+                    'is_admin': validated_data.pop('is_admin'),
+                    'role': validated_data.pop('role', None)
                 }
                 if 'username' not in validated_data.keys():
                     validated_data['username'] = get_random_string(25)
