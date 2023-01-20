@@ -15,7 +15,7 @@ class UserCompany(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
     is_admin = models.BooleanField(default=False, verbose_name=_("Администратор компании"))
     is_blocked = models.BooleanField(default=False, verbose_name=_("Заблокирован администратором компании"))
-    role = models.ForeignKey(settings.GARPIX_COMPANY_ROLE_MODEL, null=True, on_delete=models.SET_NULL,
+    role = models.ForeignKey(settings.GARPIX_COMPANY_ROLE_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
                              verbose_name=_('Роль в компании'))
 
     class Meta:

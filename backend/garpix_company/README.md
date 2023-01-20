@@ -122,6 +122,15 @@ class CustomInviteCompanySerializer(CreateAndInviteToCompanySerializer):
 
 ```
 
+You also can override `UserSerializer` to add custom fields to `user` field of `/company/{pk}/user/` endpoints:
+
+```python
+# settings.py
+
+GARPIX_COMPANY_USER_SERIALIZER = 'app.serializers.UserSerializer'
+
+```
+
 ## Companies count limit
 
 If you need to add some limitations on companies count the user can be a part of, you can override `check_user_companies_limit` class method of `Company` class:
