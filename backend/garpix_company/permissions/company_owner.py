@@ -16,7 +16,6 @@ class CompanyOwnerOnly(permissions.BasePermission):
 
         if isinstance(obj, Company):
             return request.user.is_authenticated and request.user == obj.owner
-        if isinstance(obj, UserCompany):
+        if isinstance(obj, UserCompany) or isinstance(obj, InviteToCompany):
             return request.user.is_authenticated and request.user == obj.company.owner
-        if isinstance(obj, InviteToCompany):
-            return request.user.is_authenticated and request.user == obj.company.owner
+        return False

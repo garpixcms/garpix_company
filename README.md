@@ -122,12 +122,13 @@ class CustomInviteCompanySerializer(CreateAndInviteToCompanySerializer):
 
 ```
 
-You also can override `UserSerializer` to add custom fields to `user` field of `/company/{pk}/user/` endpoints:
+You also can override `UserSerializer` and `CompanyRoleSerializer` to add custom fields to `user` and `role` fields of `/company/{pk}/user/` endpoints:
 
 ```python
 # settings.py
 
 GARPIX_COMPANY_USER_SERIALIZER = 'app.serializers.UserSerializer'
+GARPIX_COMPANY_ROLE_SERIALIZER = 'app.serializers.CompanyRoleSerializer'
 
 ```
 

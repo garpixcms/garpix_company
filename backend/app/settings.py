@@ -56,5 +56,6 @@ GARPIX_COMPANY_ROLE_MODEL = 'app.UserCompanyRole'
 
 GARPIX_COMPANY_CREATE_AND_INVITE_SERIALIZER = 'app.serializers.CustomInviteCompanySerializer'
 GARPIX_COMPANY_USER_SERIALIZER = 'app.serializers.UserSerializer'
+GARPIX_COMPANY_ROLE_SERIALIZER = 'app.serializers.CompanyRoleSerializer'
 
 SITE_URL = '127.0.0.1:8000'

@@ -1,9 +1,15 @@
+### 1.2.0 (19.01.2023)
+
+- Fixed bug with `CompanyAdminOnly` permission classes
+- `GARPIX_COMPANY_ROLE_SERIALIZER` setting added (see `Readme.md`)
+
 ### 1.1.0 (19.01.2023)
 
 - Fixed bug with permissions
 - `role` field added to `InviteToCompany`
 - Searching added to GET `company/{pk}/user/` endpoint
 - `company/{pk}/invites/` endpoint added.
+- `GARPIX_COMPANY_USER_SERIALIZER` setting added (see `Readme.md`)
 
 ### 1.0.1 (13.01.2023)
 
