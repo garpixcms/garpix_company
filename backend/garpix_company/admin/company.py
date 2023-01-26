@@ -13,4 +13,3 @@ class CompanyAdmin(admin.ModelAdmin):
     list_display = ('title', 'created_at')
     readonly_fields = ('created_at', )
     inlines = (UserCompanyInline,)
-    raw_id_fields = ['owner']

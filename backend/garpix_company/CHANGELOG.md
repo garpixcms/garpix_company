@@ -1,3 +1,9 @@
+### 2.0.0 (26.01.2023)
+
+- Fields `owner` from `Company`, `is_admin` from `UserCompany` and `Invite` models deprecated
+- `change_role` endpoint added
+- `status` filter added to `invites` list endpoint
+
 ### 1.2.0 (19.01.2023)
 
 - Fixed bug with `CompanyAdminOnly` permission classes

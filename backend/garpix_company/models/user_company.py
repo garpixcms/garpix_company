@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from garpix_company.models.user_role import get_company_role_model
+
 User = get_user_model()
 
 
@@ -10,10 +12,9 @@ class UserCompany(models.Model):
     """
     Модель участников. Связка между компанией и пользователем.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='usercompany', verbose_name=_('Пользователь'))
-    company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_companies', verbose_name=_('Пользователь'))
+    company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, related_name='user_companies', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
-    is_admin = models.BooleanField(default=False, verbose_name=_("Администратор компании"))
     is_blocked = models.BooleanField(default=False, verbose_name=_("Заблокирован администратором компании"))
     role = models.ForeignKey(settings.GARPIX_COMPANY_ROLE_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
                              verbose_name=_('Роль в компании'))
@@ -23,51 +24,22 @@ class UserCompany(models.Model):
         verbose_name = _('Пользователь компании')
         verbose_name_plural = _('Пользователи компании')
 
-    def set_admin(self, by_user_id):
-        if self.is_blocked:
-            return False, _('Нельзя сделать администратором заблокированного пользователя')
-        if self.is_admin:
-            return False, _('Пользователь уже является администратором выбранной компании')
-        try:
-            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
-            self.is_admin = True
-            self.is_blocked = False
-            self.save()
-            return True, None
-        except UserCompany.DoesNotExist:
-            return False, _('Действие доступно только для администратора компании')
-
-    def unset_admin(self, by_user_id):
-        """
-        Лишить себя админства нельзя, остальных можно из этой компании, если админ.
-        :param by_user_id:
-        :return:
-        """
-        try:
-            by_user = UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
-            if by_user.id != self.id:
-                self.is_admin = False
-                self.save()
-                return True, None
-            else:
-                return False, _('Лишить себя админства нельзя')
-        except UserCompany.DoesNotExist:
-            return False, _('Действие доступно только для администратора компании')
-
     def block(self, by_user_id):
         """
         Заблокировать участника в компании
         :param by_user_id: ID пользователя, который хочет заблокировать
         :return:
         """
+        CompanyRole = get_company_role_model()
         if self.company.owner == self.user:
             return False, _('Нельзя заблокировать владельца компании')
+        if self.role == CompanyRole.get_admin_role():
+            return False, _('Нельзя заблокировать администратора компании')
         try:
-            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
-            if not self.is_admin:
-                self.is_blocked = True
-                self.save()
-                return True, None
+            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), role=CompanyRole.get_admin_role())
+            self.is_blocked = True
+            self.save()
+            return True, None
         except UserCompany.DoesNotExist:
             return False, _('Действие доступно только для администратора компании')
 
@@ -78,7 +50,8 @@ class UserCompany(models.Model):
         :return:
         """
         try:
-            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
+            CompanyRole = get_company_role_model()
+            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), role=CompanyRole.get_admin_role())
             self.is_blocked = False
             self.save()
             return True, None
@@ -91,13 +64,33 @@ class UserCompany(models.Model):
         :param by_user_id: ID пользователя, который хочет заблокировать
         :return:
         """
+        CompanyRole = get_company_role_model()
         if self.company.owner == self.user:
             return False, _('Нельзя удалить владельца компании')
-        if self.is_admin:
+        if self.role == CompanyRole.get_admin_role():
             return False, _('Нельзя удалить администратора компании')
         try:
-            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), is_admin=True)
+            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), role=CompanyRole.get_admin_role())
             self.delete()
+            return True, None
+        except UserCompany.DoesNotExist:
+            return False, _('Действие доступно только для администратора компании')
+
+    def change_role(self, by_user_id, role):
+        """
+        Сменить роль участника в компании
+        :param by_user_id: ID пользователя, который хочет заблокировать
+        :return:
+        """
+        CompanyRole = get_company_role_model()
+        if self.company.owner == self.user:
+            return False, _('Нельзя сменить роль владельца компании')
+        if role == CompanyRole.get_admin_role():
+            return False, _('Нельзя сделать пользователя владельцем. Воспользуйтесь функционалом смены владельца')
+        try:
+            UserCompany.objects.get(company=self.company, user_id=int(by_user_id), role=CompanyRole.get_admin_role())
+            self.role = role
+            self.save()
             return True, None
         except UserCompany.DoesNotExist:
             return False, _('Действие доступно только для администратора компании')

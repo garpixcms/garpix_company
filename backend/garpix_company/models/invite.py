@@ -22,7 +22,6 @@ class InviteToCompany(models.Model):
 
     company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, on_delete=models.CASCADE, verbose_name=_('Компания'))
     email = models.EmailField(verbose_name=_('E-mail инвайта'))
-    is_admin = models.BooleanField(default=False, verbose_name=_('Администратор компании'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
     token = models.CharField(max_length=16, verbose_name=_("Код подтверждения добавления"))
     status = FSMField(choices=CHOICES_INVITE_STATUS.CHOICES, default=CHOICES_INVITE_STATUS.CREATED,
@@ -43,7 +42,7 @@ class InviteToCompany(models.Model):
         UserCompany.objects.create(
             company=self.company,
             user=user,
-            is_admin=self.is_admin
+            role=self.role
         )
 
     @transition(field=status, source=CHOICES_INVITE_STATUS.CREATED, target=CHOICES_INVITE_STATUS.DECLINED)

@@ -17,3 +17,10 @@ class UserCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCompany
         fields = '__all__'
+
+
+class ChangeUserRoleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserCompany
+        fields = ('role',)

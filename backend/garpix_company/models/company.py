@@ -10,6 +10,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.apps import apps as django_apps
 
+from garpix_company.models.user_role import get_company_role_model
 
 User = get_user_model()
 
@@ -35,8 +36,6 @@ class AbstractCompany(models.Model):
     status = FSMField(default=COMPANY_STATUS.ACTIVE, choices=COMPANY_STATUS.CHOICES, verbose_name=_('Статус'))
     participants = models.ManyToManyField(User, through='garpix_company.UserCompany',
                                           verbose_name=_('Участники компании'))
-    owner = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='owned_companies',
-                              verbose_name=_('Владелец'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Дата создания'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Дата изменения'))
     objects = models.Manager()
@@ -89,9 +88,15 @@ class AbstractCompany(models.Model):
         if self.owner.id == new_owner_id:
             return False, _('Пользователь с указанным id уже является владельцем компании')
         try:
+            CompanyRole = get_company_role_model()
             user_company = UserCompany.objects.get(company=self, user_id=int(new_owner_id))
-            self.owner = user_company.user
-            self.save()
+
+            employee_role = CompanyRole.get_employee_role()
+            owner_role = CompanyRole.get_owner_role()
+
+            UserCompany.objects.filter(company=self, user=current_owner).update(role=employee_role)
+            user_company.role = owner_role
+            user_company.save()
             return True, None
         except UserCompany.DoesNotExist:
             return False, _('Пользователь с указанным id не является сотрудником компании')
@@ -103,6 +108,14 @@ class AbstractCompany(models.Model):
     @classmethod
     def invite_confirmation_link(cls, token):
         return f'{settings.SITE_URL}invite/{token}'
+
+    @property
+    def owner(self):
+        CompanyRole = get_company_role_model()
+        user_model_instance = self.user_companies.filter(role=CompanyRole.get_owner_role()).first()
+        if user_model_instance:
+            return user_model_instance.user
+        return None
 
 
 def get_company_model():

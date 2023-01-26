@@ -6,7 +6,10 @@ from garpix_company.models.company import get_company_model
 from garpix_company.models.user_company import UserCompany
 from django.utils.translation import ugettext_lazy as _
 
+from garpix_company.models.user_role import get_company_role_model
+
 Company = get_company_model()
+CompanyRole = get_company_role_model()
 
 
 class AdminCompanySerializerMixin(serializers.Serializer):
@@ -19,7 +22,7 @@ class AdminCompanySerializerMixin(serializers.Serializer):
             if user.is_authenticated:
                 user_company = UserCompany.objects.filter(user=user, company=obj).first()
                 if user_company is not None:
-                    return user_company.is_admin
+                    return user_company.role == CompanyRole.get_admin_role()
         return False
 
     def get_field_names(self, declared_fields, info):
@@ -43,7 +46,7 @@ class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSeri
 
     class Meta:
         model = Company
-        exclude = ('participants', 'owner')
+        exclude = ('participants',)
         extra_fields = ['is_admin']
         extra_kwargs = {
             'created_at': {'read_only': True},
@@ -52,8 +55,8 @@ class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSeri
 
     def create(self, validated_data):
         with transaction.atomic():
-            # getting user
-            user = None
+
+            CompanyRole = get_company_role_model()
             request = self.context.get("request")
             if request and hasattr(request, "user"):
                 user = request.user
@@ -61,11 +64,10 @@ class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSeri
                 raise ValidationError(_("Необходима авторизация"))
             # creating
             obj = Company(
-                owner=user,
                 **validated_data
             )
             obj.save()
-            user_company = UserCompany(user=user, company=obj, is_admin=True)
+            user_company = UserCompany(user=user, company=obj, role=CompanyRole.get_owner_role())
             user_company.save()
         return obj
 
