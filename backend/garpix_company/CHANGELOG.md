@@ -1,3 +1,7 @@
+### 2.1.0 (30.01.2023)
+
+- `lookup_field` updated to `id` in  invite view.
+
 ### 2.0.0 (26.01.2023)
 
 - Fields `owner` from `Company`, `is_admin` from `UserCompany` and `Invite` models deprecated

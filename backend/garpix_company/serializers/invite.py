@@ -95,16 +95,17 @@ class CreateAndInviteToCompanySerializer(serializers.ModelSerializer):
                 raise ValidationError({'role': [_('Нельзя пригласить пользователя на роль владельца')]})
         if request and hasattr(request, "user") and request.user.is_authenticated:
             with transaction.atomic():
-                invite_data = {
-                    'email': validated_data['email'],
-                    'company_id': company_id,
-                    'role': role
-                }
                 if 'username' not in validated_data.keys():
                     validated_data['username'] = get_random_string(25)
                 if 'password' not in validated_data.keys():
                     validated_data['password'] = User.objects.make_random_password()
-                User.objects.create_user(**validated_data)
+                user = User.objects.create_user(**validated_data)
+                invite_data = {
+                    'email': validated_data['email'],
+                    'company_id': company_id,
+                    'role': role,
+                    'user': user
+                }
                 obj = InviteToCompany(**invite_data)
                 obj.save()
                 return obj
