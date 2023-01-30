@@ -18,7 +18,7 @@ class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixi
     serializer_class = InviteToCompanySerializer
     permission_classes = [permissions.IsAdminUser | CompanyAdminOnly | CompanyOwnerOnly | CompanyInviteReceiverOnly]
 
-    lookup_field = 'token'
+    # lookup_field = 'token'  # TODO сделать вариант инвайта по токену
 
     def get_serializer_class(self):
         if self.action == 'retrieve':

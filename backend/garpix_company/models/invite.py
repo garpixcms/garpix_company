@@ -89,6 +89,7 @@ class InviteToCompany(models.Model):
             Notify.send(settings.NOTIFY_EVENT_INVITE_TO_COMPANY, {
                 'invite_confirmation_link': Company.invite_confirmation_link(self.token),
                 'company_title': str(self.company),
+                'invite': self
             }, email=str(self.email))
         super().save(*args, **kwargs)
 
