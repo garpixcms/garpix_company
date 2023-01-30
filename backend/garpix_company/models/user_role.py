@@ -1,13 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django_fsm import FSMField, transition, can_proceed
-from django.contrib.auth import get_user_model
-
-from garpix_company.helpers import COMPANY_STATUS_ENUM
-from garpix_company.managers.company import CompanyActiveManager
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.apps import apps as django_apps
 
 
@@ -16,7 +11,23 @@ class AbstractUserCompanyRole(models.Model):
     Роли в компаниях.
     """
 
+    class ROLE_TYPE(models.TextChoices):
+        ADMIN = ('admin', 'Админ')
+        OWNER = ('owner', 'Владелец')
+        EMPLOYEE = ('employee', 'Сотрудник')
+
     title = models.CharField(max_length=255, verbose_name=_('Название'))
+    role_type = models.CharField(max_length=128, choices=ROLE_TYPE.choices, default=ROLE_TYPE.EMPLOYEE,
+                                 verbose_name=_('Тип'))
+
+    def clean(self):
+        super().clean()
+        if self.role_type in [self.ROLE_TYPE.ADMIN, self.ROLE_TYPE.OWNER]:
+            if self.__class__.objects.filter(role_type=self.role_type).exists():
+                raise ValidationError({'role_type': _(f'Недопустимо создание более одной роли с типом {dict(self.ROLE_TYPE.choices)[self.role_type]}')})
+
+    def __str__(self):
+        return self.title
 
     class Meta:
         verbose_name = _('Роль в компании')

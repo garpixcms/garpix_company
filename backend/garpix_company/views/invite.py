@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.utils.module_loading import import_string
 from rest_framework import mixins, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -12,9 +10,6 @@ from garpix_company.permissions.invite_receiver import CompanyInviteReceiverOnly
 from garpix_company.serializers import InviteToCompanySerializer
 
 
-CreateAndInviteToCompanySerializer = import_string(getattr(settings, 'GARPIX_COMPANY_CREATE_AND_INVITE_SERIALIZER', 'garpix_company.serializers.CreateAndInviteToCompanySerializer'))
-
-
 class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixin, GenericViewSet):
     """
     Список участников компании
@@ -22,13 +17,13 @@ class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixi
     queryset = InviteToCompany.created_objects.all()
     serializer_class = InviteToCompanySerializer
     permission_classes = [permissions.IsAdminUser | CompanyAdminOnly | CompanyOwnerOnly | CompanyInviteReceiverOnly]
-    permission_classes_by_action = {
-        'accept': [permissions.IsAdminUser | CompanyAdminOnly | CompanyInviteReceiverOnly]
-    }
+
     lookup_field = 'token'
 
     def get_serializer_class(self):
-        return InviteToCompanySerializer
+        if self.action == 'retrieve':
+            return InviteToCompanySerializer
+        return None
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -44,7 +39,7 @@ class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixi
         if result:
             serializer = InviteToCompanySerializer(invite)
             return Response(serializer.data)
-        return Response({"non_field_error": [message]}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['post'], detail=True)
     def decline(self, request, token=None):

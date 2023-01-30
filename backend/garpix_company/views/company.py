@@ -1,17 +1,25 @@
-from rest_framework import status, permissions
+from django.conf import settings
+from django.utils.module_loading import import_string
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
+
+from garpix_company.helpers import CHOICES_INVITE_STATUS_ENUM
 from garpix_company.mixins.views import GarpixCompanyViewSetMixin
 from garpix_company.models import InviteToCompany
 from garpix_company.models.company import get_company_model
 from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly
 from garpix_company.serializers import CompanySerializer, CreateCompanySerializer, UpdateCompanySerializer, \
-    ChangeOwnerCompanySerializer, CreateAndInviteToCompanySerializer, InviteToCompanySerializer
+    ChangeOwnerCompanySerializer, InviteToCompanySerializer, InvitesSerializer
 from django.utils.translation import ugettext_lazy as _
 
 Company = get_company_model()
+
+CreateAndInviteToCompanySerializer = import_string(getattr(settings, 'GARPIX_COMPANY_CREATE_AND_INVITE_SERIALIZER',
+                                                           'garpix_company.serializers.CreateAndInviteToCompanySerializer'))
 
 
 class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
@@ -22,13 +30,13 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
     permission_classes_by_action = {'create': [IsAuthenticated],
                                     'retrieve': [AllowAny],
                                     'list': [AllowAny],
-                                    'update': [IsAdminUser | CompanyAdminOnly],
-                                    'partial_update': [IsAdminUser | CompanyAdminOnly],
-                                    'destroy': [IsAdminUser | CompanyAdminOnly],
-                                    'change_owner': [IsAdminUser | CompanyOwnerOnly],
+                                    'update': [CompanyOwnerOnly],
+                                    'partial_update': [CompanyOwnerOnly],
+                                    'destroy': [CompanyOwnerOnly],
+                                    'change_owner': [CompanyOwnerOnly],
                                     'invite': [CompanyAdminOnly | CompanyOwnerOnly],
                                     'create_and_invite': [CompanyAdminOnly | CompanyOwnerOnly],
-                                    'invites': [AllowAny]
+                                    'invites': [CompanyAdminOnly | CompanyOwnerOnly]
                                     }
 
     def get_serializer_class(self):
@@ -40,7 +48,9 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
             return ChangeOwnerCompanySerializer
         if self.action == 'create_and_invite':
             return CreateAndInviteToCompanySerializer
-        if self.action in ['invite', 'invites']:
+        if self.action == 'invites':
+            return InvitesSerializer
+        if self.action == 'invite':
             return InviteToCompanySerializer
         return CompanySerializer
 
@@ -77,11 +87,19 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    @action(methods=['get'], detail=True, serializer_class=InviteToCompanySerializer(many=True))
+    @extend_schema(parameters=[
+        OpenApiParameter(
+            name='status',
+            type=str,
+            enum=[choice[0] for choice in CHOICES_INVITE_STATUS_ENUM.CHOICES]
+        ),
+    ])
+    @action(methods=['get'], detail=True)
     def invites(self, request, pk):
         company = self.get_object()
         self.check_object_permissions(request, company)
         queryset = InviteToCompany.objects.filter(company=company)
-
+        if invite_status := request.GET.get('status', None):
+            queryset = queryset.filter(status=invite_status)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
