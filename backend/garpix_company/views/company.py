@@ -88,11 +88,11 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @extend_schema(parameters=[
-                    OpenApiParameter(
-                        name='status',
-                        type=str,
-                        enum=[choice[0] for choice in CHOICES_INVITE_STATUS_ENUM.CHOICES]
-                    ),
+        OpenApiParameter(
+            name='status',
+            type=str,
+            enum=[choice[0] for choice in CHOICES_INVITE_STATUS_ENUM.CHOICES]
+        ),
     ])
     @action(methods=['get'], detail=True)
     def invites(self, request, pk):

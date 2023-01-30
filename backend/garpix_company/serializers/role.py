@@ -7,4 +7,4 @@ class GarpixCompanyRoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_company_role_model()
-        fields = ('id', 'title')
+        fields = ('id', 'title', 'role_type')

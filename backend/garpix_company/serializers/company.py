@@ -7,6 +7,7 @@ from garpix_company.models.user_company import UserCompany
 from django.utils.translation import ugettext_lazy as _
 
 from garpix_company.models.user_role import get_company_role_model
+from garpix_company.services.role_service import UserCompanyRoleService
 
 Company = get_company_model()
 CompanyRole = get_company_role_model()
@@ -16,13 +17,15 @@ class AdminCompanySerializerMixin(serializers.Serializer):
     is_admin = serializers.SerializerMethodField(read_only=True)
 
     def get_is_admin(self, obj):
+        company_role_service = UserCompanyRoleService()
+
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
             if user.is_authenticated:
                 user_company = UserCompany.objects.filter(user=user, company=obj).first()
                 if user_company is not None:
-                    return user_company.role == CompanyRole.get_admin_role()
+                    return user_company.role == company_role_service.get_admin_role()
         return False
 
     def get_field_names(self, declared_fields, info):
@@ -65,17 +68,19 @@ class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSeri
         with transaction.atomic():
 
             CompanyRole = get_company_role_model()
+            company_role_service = UserCompanyRoleService()
             request = self.context.get("request")
             if request and hasattr(request, "user"):
                 user = request.user
             else:
                 raise ValidationError(_("Необходима авторизация"))
             # creating
+            validated_data.pop('user_by')
             obj = Company(
                 **validated_data
             )
             obj.save()
-            user_company = UserCompany(user=user, company=obj, role=CompanyRole.get_owner_role())
+            user_company = UserCompany(user=user, company=obj, role=company_role_service.get_owner_role())
             user_company.save()
         return obj
 

@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.utils.module_loading import import_string
 from garpix_utils.string import get_random_string
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -7,10 +9,10 @@ from rest_framework.exceptions import ValidationError
 from garpix_company.models.company import get_company_model
 from garpix_company.models.invite import InviteToCompany
 from django.utils.translation import ugettext_lazy as _
-
-
-# RoleSerializer = import_string(getattr(settings, 'GARPIX_COMPANY_ROLE_SERIALIZER', 'garpix_company.serializers.GarpixCompanyRoleSerializer'))
 from garpix_company.models.user_role import get_company_role_model
+
+
+RoleSerializer = import_string(getattr(settings, 'GARPIX_COMPANY_ROLE_SERIALIZER', 'garpix_company.serializers.role.GarpixCompanyRoleSerializer'))
 
 
 class InviteToCompanySerializer(serializers.ModelSerializer):
@@ -111,7 +113,7 @@ class CreateAndInviteToCompanySerializer(serializers.ModelSerializer):
 
 class InvitesSerializer(serializers.ModelSerializer):
 
-    # role = RoleSerializer()
+    role = RoleSerializer()
 
     class Meta:
         model = InviteToCompany

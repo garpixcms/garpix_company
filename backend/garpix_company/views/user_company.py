@@ -18,7 +18,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
                          mixins.ListModelMixin,
                          GenericViewSet):
     permission_classes = [CompanyAdminOnly | CompanyOwnerOnly]
-    queryset = UserCompany.objects.all()
+    queryset = UserCompany.active_objects.all()
     serializer_class = UserCompanySerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['user__email']
@@ -34,7 +34,9 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
         Company = get_company_model()
         company_pk = self.kwargs.get("company_pk")
         company = get_object_or_404(Company.objects.all(), id=company_pk)
-        return self.queryset.filter(company=company)
+        if self.action not in ['unblock', 'destroy']:
+            return self.queryset.filter(company=company)
+        return UserCompany.objects.filter(company=company)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
