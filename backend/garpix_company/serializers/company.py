@@ -44,14 +44,22 @@ class CompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer
 
 class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer):
 
+    user_by = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Company
         exclude = ('participants',)
-        extra_fields = ['is_admin']
+        extra_fields = ['is_admin', 'user_by']
         extra_kwargs = {
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True}
         }
+
+    def validate_user_by(self, value):
+        Company = get_company_model()
+        if not Company.check_user_companies_limit(value):
+            raise ValidationError(_('У вас превышен лимит количества компаний'))
+        return value
 
     def create(self, validated_data):
         with transaction.atomic():

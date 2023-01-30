@@ -30,13 +30,13 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
     permission_classes_by_action = {'create': [IsAuthenticated],
                                     'retrieve': [AllowAny],
                                     'list': [AllowAny],
-                                    'update': [IsAdminUser | CompanyAdminOnly],
-                                    'partial_update': [IsAdminUser | CompanyAdminOnly],
-                                    'destroy': [IsAdminUser | CompanyAdminOnly],
-                                    'change_owner': [IsAdminUser | CompanyOwnerOnly],
+                                    'update': [CompanyOwnerOnly],
+                                    'partial_update': [CompanyOwnerOnly],
+                                    'destroy': [CompanyOwnerOnly],
+                                    'change_owner': [CompanyOwnerOnly],
                                     'invite': [CompanyAdminOnly | CompanyOwnerOnly],
                                     'create_and_invite': [CompanyAdminOnly | CompanyOwnerOnly],
-                                    'invites': [AllowAny]
+                                    'invites': [CompanyAdminOnly | CompanyOwnerOnly]
                                     }
 
     def get_serializer_class(self):

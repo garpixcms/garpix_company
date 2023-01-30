@@ -35,18 +35,6 @@ class AbstractUserCompanyRole(models.Model):
         ordering = ['-id']
         abstract = True
 
-    @classmethod
-    def get_owner_role(cls):
-        return cls.objects.filter(role_type=cls.ROLE_TYPE.OWNER).first()
-
-    @classmethod
-    def get_employee_role(cls):
-        return cls.objects.filter(role_type=cls.ROLE_TYPE.EMPLOYEE).first()
-
-    @classmethod
-    def get_admin_role(cls):
-        return cls.objects.filter(role_type=cls.ROLE_TYPE.ADMIN).first()
-
 
 def get_company_role_model():
     """

@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.apps import apps as django_apps
 
-from garpix_company.models.user_role import get_company_role_model
+from garpix_company.services.role_service import UserCompanyRoleService
 
 User = get_user_model()
 
@@ -83,18 +83,18 @@ class AbstractCompany(models.Model):
 
     def change_owner(self, new_owner_id, current_owner):
         from .user_company import UserCompany
+        company_role_service = UserCompanyRoleService()
         if self.owner != current_owner:
             return False, _('Действие доступно только для владельца компании')
         if self.owner.id == new_owner_id:
             return False, _('Пользователь с указанным id уже является владельцем компании')
         try:
-            CompanyRole = get_company_role_model()
             user_company = UserCompany.objects.get(company=self, user_id=int(new_owner_id))
 
-            employee_role = CompanyRole.get_employee_role()
-            owner_role = CompanyRole.get_owner_role()
+            admin_role = company_role_service.get_admin_role()
+            owner_role = company_role_service.get_owner_role()
 
-            UserCompany.objects.filter(company=self, user=current_owner).update(role=employee_role)
+            UserCompany.objects.filter(company=self, user=current_owner).update(role=admin_role)
             user_company.role = owner_role
             user_company.save()
             return True, None
@@ -111,8 +111,8 @@ class AbstractCompany(models.Model):
 
     @property
     def owner(self):
-        CompanyRole = get_company_role_model()
-        user_model_instance = self.user_companies.filter(role=CompanyRole.get_owner_role()).first()
+        company_role_service = UserCompanyRoleService()
+        user_model_instance = self.user_companies.filter(role=company_role_service.get_owner_role()).first()
         if user_model_instance:
             return user_model_instance.user
         return None

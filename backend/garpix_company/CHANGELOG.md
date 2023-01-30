@@ -3,6 +3,8 @@
 - Fields `owner` from `Company`, `is_admin` from `UserCompany` and `Invite` models deprecated
 - `change_role` endpoint added
 - `status` filter added to `invites` list endpoint
+- All permissions are in views now
+- `user` field added to invite functionality
 
 ### 1.2.0 (19.01.2023)
 

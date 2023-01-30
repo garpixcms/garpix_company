@@ -17,7 +17,7 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InviteToCompany
-        fields = ('email', 'role')
+        fields = ('email', 'user', 'role')
         extra_kwargs = {
             'role': {'required': True},
         }
@@ -33,6 +33,22 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
             raise ValidationError(_('Пользователь с указанным email не зарегистрирован'))
         return value
 
+    def validate_user(self, value):
+        Company = get_company_model()
+        if not Company.check_user_companies_limit(value):
+            raise ValidationError(_('У пользователя с указанным id превышен лимит количества компаний'))
+        return value
+
+    def validate(self, data):
+        validated_data = super().validate(data)
+        user = validated_data.get('user', None)
+        email = validated_data.get('email', None)
+        if not user and not email:
+            raise ValidationError(_('Укажите email или id пользователя'))
+        if user:
+            data['email'] = user.email
+        return data
+
     def create(self, validated_data):
         Role = get_company_role_model()
         request = self.context.get("request")
@@ -44,9 +60,8 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
             with transaction.atomic():
                 # creating
                 obj = InviteToCompany(
-                    email=validated_data['email'],
                     company_id=company_id,
-                    role=role
+                    **validated_data
                 )
                 obj.save()
                 return obj

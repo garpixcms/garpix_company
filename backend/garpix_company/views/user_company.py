@@ -1,14 +1,13 @@
 from rest_framework.generics import get_object_or_404
 from rest_framework import status, mixins, filters
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from garpix_company.mixins.views import GarpixCompanyViewSetMixin
 from garpix_company.models import get_company_model
 from garpix_company.models.user_company import UserCompany
-from garpix_company.permissions import CompanyAdminOnly
+from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly
 from garpix_company.serializers.user_company import UserCompanySerializer, ChangeUserRoleSerializer
 from django.utils.translation import ugettext_lazy as _
 
@@ -18,7 +17,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
                          mixins.DestroyModelMixin,
                          mixins.ListModelMixin,
                          GenericViewSet):
-    permission_classes = [IsAdminUser | CompanyAdminOnly]
+    permission_classes = [CompanyAdminOnly | CompanyOwnerOnly]
     queryset = UserCompany.objects.all()
     serializer_class = UserCompanySerializer
     filter_backends = [filters.SearchFilter]
@@ -40,7 +39,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.check_object_permissions(request, instance)
-        result, message = instance.kick(request.user.id)
+        result, message = instance.kick()
         if result:
             return Response({'status': _('success')}, status=status.HTTP_200_OK)
         return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)
@@ -49,7 +48,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
     def block(self, request, *args, **kwargs):
         instance = self.get_object()
         self.check_object_permissions(request, instance)
-        result, message = instance.block(request.user.id)
+        result, message = instance.block()
         if result:
             return Response({'status': _('success')}, status=status.HTTP_200_OK)
         return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)
@@ -58,7 +57,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
     def unblock(self, request, *args, **kwargs):
         instance = self.get_object()
         self.check_object_permissions(request, instance)
-        result, message = instance.unblock(request.user.id)
+        result, message = instance.unblock()
         if result:
             return Response({'status': _('success')}, status=status.HTTP_200_OK)
         return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)
@@ -69,7 +68,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
         self.check_object_permissions(request, instance)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        result, message = instance.change_role(request.user.id, role=serializer.data['role'])
+        result, message = instance.change_role(role=serializer.data['role'])
         if result:
             return Response({'status': _('success')}, status=status.HTTP_200_OK)
         return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)
