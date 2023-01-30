@@ -6,6 +6,7 @@ GARPIX_COMPANY_NOTIFY_EVENTS = {
         'context_description': "<ul>"
                                "    <li>{{ invite_confirmation_link }} - Ссылка-приглашение в компанию</li>"
                                "    <li>{{ company_title }} - Название компании</li>"
+                               "    <li>{{ invite }} - Объект инвайта в компанию</li>"
                                "</ul>",
     }
 }
