@@ -1,3 +1,7 @@
+### 2.1.1 (02.02.2023)
+
+- `CompanyOwnerOnly` and `CompanyAdminOnly` permissions bug fixed
+
 ### 2.1.0 (30.01.2023)
 
 - `lookup_field` updated to `id` in  invite view.

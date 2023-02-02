@@ -15,9 +15,6 @@ class CompanyAdminOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         company_role_service = UserCompanyRoleService()
 
-        if request.method in permissions.SAFE_METHODS:
-            return True
-
         if isinstance(obj, Company):
             return request.user.is_authenticated and request.user.id in obj.user_companies.filter(
                 role=company_role_service.get_admin_role()).values_list('user', flat=True)
