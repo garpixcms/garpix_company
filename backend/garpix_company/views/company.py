@@ -36,7 +36,7 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
                                     'change_owner': [CompanyOwnerOnly],
                                     'invite': [CompanyAdminOnly | CompanyOwnerOnly],
                                     'create_and_invite': [CompanyAdminOnly | CompanyOwnerOnly],
-                                    'invites': [CompanyAdminOnly | CompanyOwnerOnly]
+                                    'invites': [AllowAny]
                                     }
 
     def get_serializer_class(self):
@@ -101,5 +101,9 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
         queryset = InviteToCompany.objects.filter(company=company)
         if invite_status := request.GET.get('status', None):
             queryset = queryset.filter(status=invite_status)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)

@@ -1,3 +1,8 @@
+### 2.2.0 (02.02.2023)
+
+- Set `blank=True` to field `user` of `InviteToCompany` model
+- Pagination added to `invites` endpoint
+
 ### 2.1.1 (02.02.2023)
 
 - `CompanyOwnerOnly` and `CompanyAdminOnly` permissions bug fixed

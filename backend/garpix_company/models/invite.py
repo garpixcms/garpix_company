@@ -27,7 +27,7 @@ class InviteToCompany(models.Model):
                       verbose_name=_("Статус инвайта"))
     role = models.ForeignKey(settings.GARPIX_COMPANY_ROLE_MODEL, on_delete=models.CASCADE,
                              verbose_name=_('Роль в компании'))
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, verbose_name=_('Пользователь'))
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Пользователь'))
     objects = models.Manager()
     created_objects = CreatedInviteManager()
 
