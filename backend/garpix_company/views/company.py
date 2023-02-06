@@ -36,7 +36,7 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
                                     'change_owner': [CompanyOwnerOnly],
                                     'invite': [CompanyAdminOnly | CompanyOwnerOnly],
                                     'create_and_invite': [CompanyAdminOnly | CompanyOwnerOnly],
-                                    'invites': [AllowAny]
+                                    'invites': [CompanyAdminOnly | CompanyOwnerOnly]
                                     }
 
     def get_serializer_class(self):
