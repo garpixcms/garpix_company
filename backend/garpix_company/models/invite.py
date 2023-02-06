@@ -64,7 +64,7 @@ class InviteToCompany(models.Model):
         """
         try:
             with transaction.atomic():
-                user = User.objects.get(email=self.email)
+                user = self.user if self.user else User.objects.get(email=self.email)
                 self._in_accept(user)
                 self.save()
             return True, None
