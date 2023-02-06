@@ -1,3 +1,7 @@
+### 2.4.1 (06.02.2023)
+
+- Updated `django-filter` minimum version to 21.1
+
 ### 2.4.0 (06.02.2023)
 
 - `accept` and `decline` invite endpoints fixed
