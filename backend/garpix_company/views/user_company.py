@@ -3,7 +3,7 @@ from rest_framework import status, mixins, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
+from django_filters.rest_framework import DjangoFilterBackend
 from garpix_company.mixins.views import GarpixCompanyViewSetMixin
 from garpix_company.models import get_company_model
 from garpix_company.models.user_company import UserCompany
@@ -18,10 +18,11 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
                          mixins.ListModelMixin,
                          GenericViewSet):
     permission_classes = [CompanyAdminOnly | CompanyOwnerOnly]
-    queryset = UserCompany.active_objects.all()
+    queryset = UserCompany.objects.all()
     serializer_class = UserCompanySerializer
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     search_fields = ['user__email']
+    filterset_fields = ['is_blocked']
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
@@ -34,9 +35,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
         Company = get_company_model()
         company_pk = self.kwargs.get("company_pk")
         company = get_object_or_404(Company.objects.all(), id=company_pk)
-        if self.action not in ['unblock', 'destroy']:
-            return self.queryset.filter(company=company)
-        return UserCompany.objects.filter(company=company)
+        return self.queryset.filter(company=company)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

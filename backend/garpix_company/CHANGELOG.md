@@ -1,3 +1,7 @@
+### 2.3.0 (06.02.2023)
+
+- Added `is_blocked` filter to `company/{id}/user` endpoint
+
 ### 2.2.0 (02.02.2023)
 
 - Set `blank=True` to field `user` of `InviteToCompany` model

@@ -8,6 +8,8 @@ django = ">=3.1"
 garpixcms = "==3.43.0"
 django-fsm = "*"
 drf-nested-routers = "*"
+django-filter = "*"
+uwsgi = "==2.0.21"
 
 [dev-packages]
 
