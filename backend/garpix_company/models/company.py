@@ -81,20 +81,19 @@ class AbstractCompany(models.Model):
     def hard_delete(self):
         super().delete()
 
-    def change_owner(self, new_owner_id, current_owner):
+    def change_owner(self, new_owner_id, current_user):
         from .user_company import UserCompany
         company_role_service = UserCompanyRoleService()
-        if self.owner != current_owner:
+        if self.owner != current_user:
             return False, _('Действие доступно только для владельца компании')
-        if self.owner.id == new_owner_id:
-            return False, _('Пользователь с указанным id уже является владельцем компании')
         try:
-            user_company = UserCompany.objects.get(company=self, user_id=int(new_owner_id))
-
+            user_company = UserCompany.objects.get(company=self, pk=int(new_owner_id))
+            if self.owner == user_company.user:
+                return False, _('Пользователь с указанным id уже является владельцем компании')
             admin_role = company_role_service.get_admin_role()
             owner_role = company_role_service.get_owner_role()
 
-            UserCompany.objects.filter(company=self, user=current_owner).update(role=admin_role)
+            UserCompany.objects.filter(company=self, user=current_user).update(role=admin_role)
             user_company.role = owner_role
             user_company.save()
             return True, None

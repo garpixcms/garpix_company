@@ -1,3 +1,9 @@
+### 2.4.0 (06.02.2023)
+
+- `accept` and `decline` invite endpoints fixed
+- `change` owner now works by `UserCompany` instance id
+- Invite permissions fixed
+
 ### 2.3.0 (06.02.2023)
 
 - Added `is_blocked` filter to `company/{id}/user` endpoint

@@ -20,7 +20,7 @@ class InviteToCompany(models.Model):
     CHOICES_INVITE_STATUS = CHOICES_INVITE_STATUS_ENUM
 
     company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, on_delete=models.CASCADE, verbose_name=_('Компания'))
-    email = models.EmailField(null=True, verbose_name=_('E-mail инвайта'))
+    email = models.EmailField(null=True, blank=True, verbose_name=_('E-mail инвайта'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
     token = models.CharField(max_length=16, verbose_name=_("Код подтверждения добавления"))
     status = FSMField(choices=CHOICES_INVITE_STATUS.CHOICES, default=CHOICES_INVITE_STATUS.CREATED,
@@ -86,11 +86,12 @@ class InviteToCompany(models.Model):
         is_new = self.pk is None
         if is_new:
             self.token = get_random_string(16)
+            email = self.email if self.email else self.user.email
             Notify.send(settings.NOTIFY_EVENT_INVITE_TO_COMPANY, {
                 'invite_confirmation_link': Company.invite_confirmation_link(self.token),
                 'company_title': str(self.company),
                 'invite': self
-            }, email=str(self.email))
+            }, email=str(email))
         super().save(*args, **kwargs)
 
     def __str__(self):

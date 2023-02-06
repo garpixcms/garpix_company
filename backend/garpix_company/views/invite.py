@@ -32,7 +32,7 @@ class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixi
         return Response(serializer.data)
 
     @action(methods=['post'], detail=True)
-    def accept(self, request, token=None):
+    def accept(self, request, pk):
         invite = self.get_object()
         self.check_object_permissions(request, invite)
         result, message = invite.accept()
@@ -42,7 +42,7 @@ class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixi
         return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['post'], detail=True)
-    def decline(self, request, token=None):
+    def decline(self, request, pk):
         invite = self.get_object()
         self.check_object_permissions(request, invite)
         invite.decline()
