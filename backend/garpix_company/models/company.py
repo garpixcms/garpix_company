@@ -90,6 +90,8 @@ class AbstractCompany(models.Model):
             user_company = UserCompany.objects.get(company=self, pk=int(new_owner_id))
             if self.owner == user_company.user:
                 return False, _('Пользователь с указанным id уже является владельцем компании')
+            if user_company.is_blocked:
+                return False, _('Нельзя сделать владельцем заблокированного пользователя')
             admin_role = company_role_service.get_admin_role()
             owner_role = company_role_service.get_owner_role()
 

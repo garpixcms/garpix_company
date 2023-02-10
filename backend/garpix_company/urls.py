@@ -11,14 +11,14 @@ router = routers.SimpleRouter()
 
 urlpatterns = []
 
-router.register(f'{API_URL}/company_invite', views.InviteToCompanyViewSet, basename='company_invite')
+router.register('company_invite', views.InviteToCompanyViewSet, basename='company_invite')
 
-router.register(f'{API_URL}/company', views.CompanyViewSet, basename='api_company')
+router.register('company', views.CompanyViewSet, basename='api_company')
 
-company_user_router = routers.NestedDefaultRouter(router, f'{API_URL}/company', lookup='company')
-company_user_router.register(r'user', views.UserCompanyViewSet, basename='api_company_user')
+company_user_router = routers.NestedDefaultRouter(router, 'company', lookup='company')
+company_user_router.register('user', views.UserCompanyViewSet, basename='api_company_user')
 
 urlpatterns += [
-    path(r'', include(router.urls)),
-    path(r'', include(company_user_router.urls)),
+    path(f'{API_URL}/', include(router.urls)),
+    path(f'{API_URL}/', include(company_user_router.urls)),
 ]

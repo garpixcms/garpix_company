@@ -37,7 +37,7 @@ class AdminCompanySerializerMixin(serializers.Serializer):
             return expanded_fields
 
 
-class CompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer):
+class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
@@ -45,7 +45,7 @@ class CompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer
         extra_fields = ['is_admin']
 
 
-class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSerializer):
+class CreateCompanySerializer(serializers.ModelSerializer):
 
     user_by = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
@@ -67,7 +67,6 @@ class CreateCompanySerializer(AdminCompanySerializerMixin, serializers.ModelSeri
     def create(self, validated_data):
         with transaction.atomic():
 
-            CompanyRole = get_company_role_model()
             company_role_service = UserCompanyRoleService()
             request = self.context.get("request")
             if request and hasattr(request, "user"):

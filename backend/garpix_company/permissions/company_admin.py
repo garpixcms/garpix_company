@@ -1,7 +1,6 @@
 from rest_framework import permissions
 
 from garpix_company.models import get_company_model, UserCompany, InviteToCompany
-from garpix_company.models.user_role import get_company_role_model
 from garpix_company.services.role_service import UserCompanyRoleService
 
 Company = get_company_model()
