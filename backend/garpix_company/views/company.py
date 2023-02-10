@@ -3,7 +3,7 @@ from django.utils.module_loading import import_string
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 
@@ -11,7 +11,7 @@ from garpix_company.helpers import CHOICES_INVITE_STATUS_ENUM
 from garpix_company.mixins.views import GarpixCompanyViewSetMixin
 from garpix_company.models import InviteToCompany
 from garpix_company.models.company import get_company_model
-from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly
+from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly, CompanyUserOnly
 from garpix_company.serializers import CompanySerializer, CreateCompanySerializer, UpdateCompanySerializer, \
     ChangeOwnerCompanySerializer, InviteToCompanySerializer, InvitesSerializer
 from django.utils.translation import ugettext_lazy as _
@@ -28,8 +28,8 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
     serializer_class = CompanySerializer
     http_method_names = ['get', 'post', 'patch', 'head', 'options', 'delete']
     permission_classes_by_action = {'create': [IsAuthenticated],
-                                    'retrieve': [AllowAny],
-                                    'list': [AllowAny],
+                                    'retrieve': [CompanyUserOnly],
+                                    'list': [IsAdminUser],
                                     'update': [CompanyOwnerOnly],
                                     'partial_update': [CompanyOwnerOnly],
                                     'destroy': [CompanyOwnerOnly],

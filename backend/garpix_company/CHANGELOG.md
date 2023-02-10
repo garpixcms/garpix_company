@@ -1,3 +1,10 @@
+### 2.5.0 (10.02.2023)
+
+- `is_admin` field removed from `company` views
+- GET `company` and `company/{id}/` endpoints permissions changed
+- Added a check to see if the user is blocked when changing the owner
+- Added check whether the user to whom the invite is sent is already company user
+
 ### 2.4.1 (06.02.2023)
 
 - Updated `django-filter` minimum version to 21.1

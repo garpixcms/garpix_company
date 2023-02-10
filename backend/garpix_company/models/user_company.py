@@ -72,8 +72,10 @@ class UserCompany(models.Model):
         CompanyRole = get_company_role_model()
         if self.company.owner == self.user:
             return False, _('Нельзя сменить роль владельца компании')
-        if role == CompanyRole.get_admin_role():
+        if role == CompanyRole.get_owner_role():
             return False, _('Нельзя сделать пользователя владельцем. Воспользуйтесь функционалом смены владельца')
+        if role == CompanyRole.get_admin_role() and self.is_blocked:
+            return False, _('Нельзя сделать администратором заблокированного пользователя')
         self.role = role
         self.save()
         return True, None
