@@ -1,3 +1,7 @@
+### 2.6.0 (14.02.2023)
+
+- Decline previous invites for the invite to same person
+
 ### 2.5.0 (10.02.2023)
 
 - `is_admin` field removed from `company` views

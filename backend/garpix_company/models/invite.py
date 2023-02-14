@@ -84,6 +84,12 @@ class InviteToCompany(models.Model):
     def save(self, *args, **kwargs):
         Company = get_company_model()
         is_new = self.pk is None
+        search_data = {'company': self.company}
+        if self.user:
+            search_data.update({'user': self.user})
+        else:
+            search_data.update({'email': self.email})
+        self.__class__.objects.filter(**search_data).update(status=self.CHOICES_INVITE_STATUS.DECLINED)
         if is_new:
             self.token = get_random_string(16)
             email = self.email if self.email else self.user.email
