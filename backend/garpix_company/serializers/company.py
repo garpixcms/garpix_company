@@ -13,20 +13,7 @@ Company = get_company_model()
 CompanyRole = get_company_role_model()
 
 
-class AdminCompanySerializerMixin(serializers.Serializer):
-    is_admin = serializers.SerializerMethodField(read_only=True)
-
-    def get_is_admin(self, obj):
-        company_role_service = UserCompanyRoleService()
-
-        request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            user = request.user
-            if user.is_authenticated:
-                user_company = UserCompany.objects.filter(user=user, company=obj).first()
-                if user_company is not None:
-                    return user_company.role == company_role_service.get_admin_role()
-        return False
+class ExtraFieldsCompanySerializerMixin(serializers.Serializer):
 
     def get_field_names(self, declared_fields, info):
         expanded_fields = super().get_field_names(declared_fields, info)
@@ -37,22 +24,21 @@ class AdminCompanySerializerMixin(serializers.Serializer):
             return expanded_fields
 
 
-class CompanySerializer(serializers.ModelSerializer):
+class CompanySerializer(ExtraFieldsCompanySerializerMixin, serializers.ModelSerializer):
 
     class Meta:
         model = Company
         exclude = ('participants',)
-        extra_fields = ['is_admin']
 
 
-class CreateCompanySerializer(serializers.ModelSerializer):
+class CreateCompanySerializer(ExtraFieldsCompanySerializerMixin, serializers.ModelSerializer):
 
     user_by = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Company
         exclude = ('participants',)
-        extra_fields = ['is_admin', 'user_by']
+        extra_fields = ['user_by']
         extra_kwargs = {
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True}
@@ -84,7 +70,7 @@ class CreateCompanySerializer(serializers.ModelSerializer):
         return obj
 
 
-class UpdateCompanySerializer(serializers.ModelSerializer):
+class UpdateCompanySerializer(ExtraFieldsCompanySerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = (

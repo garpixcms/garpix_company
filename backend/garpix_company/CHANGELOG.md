@@ -1,3 +1,7 @@
+### 2.6.1 (27.04.2023)
+
+- Invite user bug fixed
+
 ### 2.6.0 (14.02.2023)
 
 - Decline previous invites for the invite to same person

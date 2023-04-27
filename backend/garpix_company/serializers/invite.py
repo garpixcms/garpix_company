@@ -28,11 +28,12 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         User = get_user_model()
         Company = get_company_model()
+        company_id = self.context.get("company_id")
         try:
             user = User.objects.get(email=value)
             if not Company.check_user_companies_limit(user):
                 raise ValidationError(_('У пользователя с указанным email превышен лимит количества компаний'))
-            if UserCompany.active_objects.filter(user=user).exists():
+            if UserCompany.active_objects.filter(user=user, company_id=company_id).exists():
                 raise ValidationError(_('Указанный пользователь уже является сотрудником компании'))
         except User.DoesNotExist:
             raise ValidationError(_('Пользователь с указанным email не зарегистрирован'))
@@ -40,9 +41,10 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
 
     def validate_user(self, value):
         Company = get_company_model()
+        company_id = self.context.get("company_id")
         if not Company.check_user_companies_limit(value):
             raise ValidationError(_('У пользователя с указанным id превышен лимит количества компаний'))
-        if UserCompany.active_objects.filter(user=value).exists():
+        if UserCompany.active_objects.filter(user=value, company_id=company_id).exists():
             raise ValidationError(_('Указанный пользователь уже является сотрудником компании'))
         return value
 
