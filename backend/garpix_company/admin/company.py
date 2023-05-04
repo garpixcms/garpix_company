@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from garpix_company.models import UserCompany
+from garpix_company.models import get_user_company_model
+
+UserCompany = get_user_company_model()
 
 
 class UserCompanyInline(admin.TabularInline):

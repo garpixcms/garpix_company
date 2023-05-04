@@ -6,7 +6,7 @@ from garpix_utils.string import get_random_string
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from garpix_company.models import UserCompany
+from garpix_company.models import get_user_company_model
 from garpix_company.models.company import get_company_model
 from garpix_company.models.invite import InviteToCompany
 from django.utils.translation import ugettext_lazy as _
@@ -14,6 +14,7 @@ from garpix_company.models.user_role import get_company_role_model
 
 
 RoleSerializer = import_string(getattr(settings, 'GARPIX_COMPANY_ROLE_SERIALIZER', 'garpix_company.serializers.role.GarpixCompanyRoleSerializer'))
+UserCompany = get_user_company_model()
 
 
 class InviteToCompanySerializer(serializers.ModelSerializer):

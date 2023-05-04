@@ -54,6 +54,8 @@ GARPIX_COMPANY_MODEL = 'app.Company'
 
 GARPIX_COMPANY_ROLE_MODEL = 'app.UserCompanyRole'
 
+GARPIX_USER_COMPANY_MODEL = 'garpix_company.UserCompany'
+
 GARPIX_COMPANY_CREATE_AND_INVITE_SERIALIZER = 'app.serializers.invite.CustomInviteCompanySerializer'
 GARPIX_COMPANY_USER_SERIALIZER = 'app.serializers.user.UserSerializer'
 GARPIX_COMPANY_ROLE_SERIALIZER = 'garpix_company.serializers.role.GarpixCompanyRoleSerializer'
