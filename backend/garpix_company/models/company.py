@@ -81,9 +81,11 @@ class AbstractCompany(models.Model):
     def hard_delete(self):
         super().delete()
 
-    def change_owner(self, new_owner_id, current_user):
+    def change_owner(self, data, current_user):
         from .user_company import UserCompany
         company_role_service = UserCompanyRoleService()
+
+        new_owner_id = data.get('new_owner')
         if self.owner != current_user:
             return False, _('Действие доступно только для владельца компании')
         try:
@@ -95,7 +97,13 @@ class AbstractCompany(models.Model):
             admin_role = company_role_service.get_admin_role()
             owner_role = company_role_service.get_owner_role()
 
-            UserCompany.objects.filter(company=self, user=current_user).update(role=admin_role)
+            new_role = data.get('role', admin_role)
+            stay_in_company = data.get('stay_in_company', True)
+
+            if stay_in_company:
+                UserCompany.objects.filter(company=self, user=current_user).update(role=new_role)
+            else:
+                UserCompany.objects.filter(company=self, user=current_user).delete()
             user_company.role = owner_role
             user_company.save()
             return True, None

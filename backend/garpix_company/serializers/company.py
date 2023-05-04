@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from garpix_company.models.company import get_company_model
-from garpix_company.models.user_company import UserCompany
+from garpix_company.models.user_company import get_user_company_model
 from django.utils.translation import ugettext_lazy as _
 
 from garpix_company.models.user_role import get_company_role_model
@@ -11,6 +11,7 @@ from garpix_company.services.role_service import UserCompanyRoleService
 
 Company = get_company_model()
 CompanyRole = get_company_role_model()
+UserCompany = get_user_company_model()
 
 
 class ExtraFieldsCompanySerializerMixin(serializers.Serializer):
@@ -79,5 +80,13 @@ class UpdateCompanySerializer(ExtraFieldsCompanySerializerMixin, serializers.Mod
         )
 
 
-class ChangeOwnerCompanySerializer(serializers.Serializer):
+class ChangeOwnerCompanySerializer(serializers.ModelSerializer):
     new_owner = serializers.IntegerField()
+    stay_in_company = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = UserCompany
+        fields = ('new_owner', 'role', 'stay_in_company')
+        extra_kwargs = {
+            'role': {'required': False}
+        }

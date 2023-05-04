@@ -1,9 +1,10 @@
 from rest_framework import permissions
 
-from garpix_company.models import get_company_model, UserCompany, InviteToCompany
+from garpix_company.models import get_company_model, get_user_company_model, InviteToCompany
 from garpix_company.services.role_service import UserCompanyRoleService
 
 Company = get_company_model()
+UserCompany = get_user_company_model()
 
 
 class CompanyAdminOnly(permissions.BasePermission):

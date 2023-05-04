@@ -11,9 +11,10 @@ from garpix_utils.string import get_random_string
 from garpix_company.helpers import CHOICES_INVITE_STATUS_ENUM
 from garpix_company.managers.invite import CreatedInviteManager
 from garpix_company.models.company import get_company_model
-from garpix_company.models.user_company import UserCompany
+from garpix_company.models.user_company import get_user_company_model
 
 User = get_user_model()
+UserCompany = get_user_company_model()
 
 
 class InviteToCompany(models.Model):

@@ -1,3 +1,8 @@
+### 2.7.0 (04.05.2023)
+
+- `GARPIX_USER_COMPANY_MODEL` setting added
+- `role` and `stay_in_company` fields added to `change_owner` endpoint
+
 ### 2.6.1 (27.04.2023)
 
 - Invite user bug fixed

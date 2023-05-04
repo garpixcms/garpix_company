@@ -68,13 +68,14 @@ class UserCompanyRole(AbstractUserCompanyRole):
 
 ```
 
-Add `GARPIX_COMPANY_MODEL` and `GARPIX_COMPANY_ROLE_MODEL` to `settings.py`:
+Add `GARPIX_COMPANY_MODEL`, `GARPIX_USER_COMPANY_MODEL` and `GARPIX_COMPANY_ROLE_MODEL` to `settings.py`:
 
 ```python
 # settings.py
 
 GARPIX_COMPANY_MODEL = 'app.Company'
 GARPIX_COMPANY_ROLE_MODEL = 'app.UserCompanyRole'
+GARPIX_USER_COMPANY_MODEL = 'garpix_company.UserCompany'
 
 ```
 

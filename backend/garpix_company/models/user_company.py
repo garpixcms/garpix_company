@@ -1,9 +1,10 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.db.models import Manager
 from django.utils.translation import ugettext_lazy as _
-
+from django.apps import apps as django_apps
 from garpix_company.models.user_role import get_company_role_model
 
 User = get_user_model()
@@ -15,7 +16,7 @@ class ActiveManager(Manager):
         return super().get_queryset().filter(is_blocked=False)
 
 
-class UserCompany(models.Model):
+class AbstractUserCompany(models.Model):
     """
     Модель участников. Связка между компанией и пользователем.
     """
@@ -33,6 +34,7 @@ class UserCompany(models.Model):
         unique_together = ("user", "company")
         verbose_name = _('Пользователь компании')
         verbose_name_plural = _('Пользователи компании')
+        abstract = True
 
     def block(self):
         """
@@ -79,3 +81,21 @@ class UserCompany(models.Model):
         self.role = role
         self.save()
         return True, None
+
+
+class UserCompany(AbstractUserCompany):
+    pass
+
+
+def get_user_company_model():
+    """
+    Return the UserCompany model that is active in this project.
+    """
+    try:
+        return django_apps.get_model(settings.GARPIX_USER_COMPANY_MODEL, require_ready=False)
+    except ValueError:
+        raise ImproperlyConfigured("GARPIX_USER_COMPANY_MODEL must be of the form 'app_label.model_name'")
+    except LookupError:
+        raise ImproperlyConfigured(
+            "GARPIX_USER_COMPANY_MODEL refers to model '%s' that has not been installed" % settings.GARPIX_USER_COMPANY_MODEL
+        )

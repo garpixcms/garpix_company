@@ -60,7 +60,7 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
         self.check_object_permissions(request, company)
         serializer = ChangeOwnerCompanySerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        result, message = company.change_owner(serializer.data['new_owner'], request.user)
+        result, message = company.change_owner(serializer.data, request.user)
         if result:
             return Response({'status': _('Владелец успешно изменен')}, status=status.HTTP_200_OK)
         return Response({"non_field_error": [message]}, status=status.HTTP_400_BAD_REQUEST)
