@@ -81,10 +81,10 @@ class AbstractUserCompany(models.Model):
         self.role = role
         self.save()
         return True, None
-
-
-class UserCompany(AbstractUserCompany):
-    pass
+#
+#
+# class UserCompany(AbstractUserCompany):
+#     pass
 
 
 def get_user_company_model():

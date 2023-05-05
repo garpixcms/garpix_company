@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django_fsm import FSMField, transition, can_proceed
 from django.contrib.auth import get_user_model
-
 from garpix_company.helpers import COMPANY_STATUS_ENUM
 from garpix_company.managers.company import CompanyActiveManager
 
@@ -34,7 +33,7 @@ class AbstractCompany(models.Model):
     ur_address = models.CharField(max_length=300, verbose_name=_("Юридический адрес"))
     fact_address = models.CharField(max_length=300, verbose_name=_("Фактический адрес"))
     status = FSMField(default=COMPANY_STATUS.ACTIVE, choices=COMPANY_STATUS.CHOICES, verbose_name=_('Статус'))
-    participants = models.ManyToManyField(User, through='garpix_company.UserCompany',
+    participants = models.ManyToManyField(User, through=settings.GARPIX_USER_COMPANY_MODEL,
                                           verbose_name=_('Участники компании'))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Дата создания'))
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Дата изменения'))
