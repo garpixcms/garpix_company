@@ -1,4 +1,5 @@
-from garpix_company.models import AbstractCompany, UserCompany
+from garpix_company.models import AbstractCompany, get_user_company_model
+UserCompany = get_user_company_model()
 
 
 class Company(AbstractCompany):
