@@ -1,7 +1,7 @@
 from garpix_company.models.user_role import get_company_role_model
 
 
-class UserCompanyRoleService():
+class UserCompanyRoleService:
 
     def __init__(self):
         self.CompanyRoleModel = get_company_role_model()

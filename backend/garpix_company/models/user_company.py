@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import Manager
 from django.utils.translation import ugettext_lazy as _
 from django.apps import apps as django_apps
-from garpix_company.models.user_role import get_company_role_model
+from garpix_company.services.role_service import UserCompanyRoleService
 
 User = get_user_model()
 
@@ -71,12 +71,12 @@ class AbstractUserCompany(models.Model):
         Сменить роль участника в компании
         :return: (bool, str)
         """
-        CompanyRole = get_company_role_model()
+        company_role_service = UserCompanyRoleService()
         if self.company.owner == self.user:
             return False, _('Нельзя сменить роль владельца компании')
-        if role == CompanyRole.get_owner_role():
+        if role == company_role_service.get_owner_role():
             return False, _('Нельзя сделать пользователя владельцем. Воспользуйтесь функционалом смены владельца')
-        if role == CompanyRole.get_admin_role() and self.is_blocked:
+        if role == company_role_service.get_admin_role() and self.is_blocked:
             return False, _('Нельзя сделать администратором заблокированного пользователя')
         self.role = role
         self.save()
