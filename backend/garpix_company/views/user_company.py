@@ -25,7 +25,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
     serializer_class = UserCompanySerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     search_fields = ['user__email']
-    filterset_fields = ['is_blocked']
+    filterset_fields = ['is_blocked', 'role']
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
