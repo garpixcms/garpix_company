@@ -1,5 +1,6 @@
 from rest_framework import mixins, permissions, status
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -21,7 +22,7 @@ class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixi
     # lookup_field = 'token'  # TODO сделать вариант инвайта по токену
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
+        if self.action in ('retrieve', 'token_retrieve'):
             return InviteToCompanySerializer
         return None
 
@@ -44,6 +45,31 @@ class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixi
     @action(methods=['post'], detail=True)
     def decline(self, request, pk):
         invite = self.get_object()
+        self.check_object_permissions(request, invite)
+        invite.decline()
+        serializer = InviteToCompanySerializer(invite)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=False, url_path='(?P<token>[^/.]+)')
+    def token_retrieve(self, request, token):
+        instance = get_object_or_404(self.get_queryset(), token=token)
+        self.check_object_permissions(request, instance)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+    @action(methods=['post'], detail=False, url_path='(?P<token>[^/.]+)/accept')
+    def accept(self, request, token):
+        invite = get_object_or_404(self.get_queryset(), token=token)
+        self.check_object_permissions(request, invite)
+        result, message = invite.accept()
+        if result:
+            serializer = InviteToCompanySerializer(invite)
+            return Response(serializer.data)
+        return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['post'], detail=False, url_path='(?P<token>[^/.]+)/decline')
+    def decline(self, request, token):
+        invite = get_object_or_404(self.get_queryset(), token=token)
         self.check_object_permissions(request, invite)
         invite.decline()
         serializer = InviteToCompanySerializer(invite)
