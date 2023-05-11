@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.apps import apps as django_apps
 
+from garpix_company.models import get_user_company_model
 from garpix_company.services.role_service import UserCompanyRoleService
 
 User = get_user_model()
@@ -81,7 +82,7 @@ class AbstractCompany(models.Model):
         super().delete()
 
     def change_owner(self, data, current_user):
-        from .user_company import UserCompany
+        UserCompany = get_user_company_model()
         company_role_service = UserCompanyRoleService()
 
         new_owner_id = data.get('new_owner')
