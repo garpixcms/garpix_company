@@ -133,18 +133,21 @@ GARPIX_COMPANY_ROLE_SERIALIZER = 'app.serializers.CompanyRoleSerializer'
 
 ```
 
+You can also set `GARPIX_COMPANY_INVITE_NOT_USERS` setting to True (False is default) to allow to invite not registered users
+
 ## Companies count limit
 
 If you need to add some limitations on companies count the user can be a part of, you can override `check_user_companies_limit` class method of `Company` class:
 
 ```python
-from garpix_company.models import AbstractCompany, UserCompany
+from garpix_company.models import AbstractCompany, get_user_company_model
 
 
 class Company(AbstractCompany):
 
     @classmethod
     def check_user_companies_limit(cls, user):
+        UserCompany = get_user_company_model()
         return UserCompany.objects.filter(user=user).count() < 1
 
 ```

@@ -30,14 +30,15 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
         User = get_user_model()
         Company = get_company_model()
         company_id = self.context.get("company_id")
-        try:
-            user = User.objects.get(email=value)
-            if not Company.check_user_companies_limit(user):
-                raise ValidationError(_('У пользователя с указанным email превышен лимит количества компаний'))
-            if UserCompany.active_objects.filter(user=user, company_id=company_id).exists():
-                raise ValidationError(_('Указанный пользователь уже является сотрудником компании'))
-        except User.DoesNotExist:
-            raise ValidationError(_('Пользователь с указанным email не зарегистрирован'))
+        if not getattr(settings, 'GARPIX_COMPANY_INVITE_NOT_USERS', False):
+            try:
+                user = User.objects.get(email=value)
+                if not Company.check_user_companies_limit(user):
+                    raise ValidationError(_('У пользователя с указанным email превышен лимит количества компаний'))
+                if UserCompany.active_objects.filter(user=user, company_id=company_id).exists():
+                    raise ValidationError(_('Указанный пользователь уже является сотрудником компании'))
+            except User.DoesNotExist:
+                raise ValidationError(_('Пользователь с указанным email не зарегистрирован'))
         return value
 
     def validate_user(self, value):

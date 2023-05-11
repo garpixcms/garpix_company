@@ -60,4 +60,6 @@ GARPIX_COMPANY_CREATE_AND_INVITE_SERIALIZER = 'app.serializers.invite.CustomInvi
 GARPIX_COMPANY_USER_SERIALIZER = 'app.serializers.user.UserSerializer'
 GARPIX_COMPANY_ROLE_SERIALIZER = 'garpix_company.serializers.role.GarpixCompanyRoleSerializer'
 
+GARPIX_COMPANY_INVITE_NOT_USERS = True
+
 SITE_URL = '127.0.0.1:8000'

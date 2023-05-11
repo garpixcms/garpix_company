@@ -1,3 +1,7 @@
+### 2.8.0 (11.05.2023)
+
+- `GARPIX_COMPANY_INVITE_NOT_USERS` setting added (see `Readme.md)
+
 ### 2.7.0 (04.05.2023)
 
 - `GARPIX_USER_COMPANY_MODEL` setting added
