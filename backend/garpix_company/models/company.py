@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.apps import apps as django_apps
 
-from garpix_company.models import get_user_company_model
+from garpix_company.models.user_company import get_user_company_model
 from garpix_company.services.role_service import UserCompanyRoleService
 
 User = get_user_model()
