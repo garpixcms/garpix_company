@@ -49,28 +49,3 @@ class InviteToCompanyViewSet(GarpixCompanyViewSetMixin, mixins.RetrieveModelMixi
         invite.decline()
         serializer = InviteToCompanySerializer(invite)
         return Response(serializer.data)
-
-    @action(methods=['get'], detail=False, url_path='(?P<token>[^/.]+)')
-    def token_retrieve(self, request, token):
-        instance = get_object_or_404(self.get_queryset(), token=token)
-        self.check_object_permissions(request, instance)
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
-
-    @action(methods=['post'], detail=False, url_path='(?P<token>[^/.]+)/accept')
-    def accept(self, request, token):
-        invite = get_object_or_404(self.get_queryset(), token=token)
-        self.check_object_permissions(request, invite)
-        result, message = invite.accept()
-        if result:
-            serializer = InviteToCompanySerializer(invite)
-            return Response(serializer.data)
-        return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(methods=['post'], detail=False, url_path='(?P<token>[^/.]+)/decline')
-    def decline(self, request, token):
-        invite = get_object_or_404(self.get_queryset(), token=token)
-        self.check_object_permissions(request, invite)
-        invite.decline()
-        serializer = InviteToCompanySerializer(invite)
-        return Response(serializer.data)

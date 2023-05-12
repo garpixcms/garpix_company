@@ -11,13 +11,14 @@ from garpix_company.helpers import CHOICES_INVITE_STATUS_ENUM
 from garpix_company.mixins.views import GarpixCompanyViewSetMixin
 from garpix_company.models import InviteToCompany
 from garpix_company.models.company import get_company_model
+from garpix_company.models.user_role import get_company_role_model
 from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly, CompanyUserOnly
 from garpix_company.serializers import CompanySerializer, CreateCompanySerializer, UpdateCompanySerializer, \
     ChangeOwnerCompanySerializer, InviteToCompanySerializer, InvitesSerializer
 from django.utils.translation import ugettext_lazy as _
 
 Company = get_company_model()
-
+CompanyRole = get_company_role_model()
 CreateAndInviteToCompanySerializer = import_string(getattr(settings, 'GARPIX_COMPANY_CREATE_AND_INVITE_SERIALIZER',
                                                            'garpix_company.serializers.CreateAndInviteToCompanySerializer'))
 
@@ -93,6 +94,10 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
             type=str,
             enum=[choice[0] for choice in CHOICES_INVITE_STATUS_ENUM.CHOICES]
         ),
+        OpenApiParameter(
+            name='role',
+            type=int
+        ),
     ])
     @action(methods=['get'], detail=True)
     def invites(self, request, pk):
@@ -101,6 +106,12 @@ class CompanyViewSet(GarpixCompanyViewSetMixin, ModelViewSet):
         queryset = InviteToCompany.objects.filter(company=company)
         if invite_status := request.GET.get('status', None):
             queryset = queryset.filter(status=invite_status)
+        if role_id := request.GET.get('role', None):
+            try:
+                role = CompanyRole.objects.get(id=role_id)
+                queryset = queryset.filter(role=role)
+            except CompanyRole.DoesNotExist:
+                return Response({'role': [_(f'Роли с id {role_id} не существует')]}, status=status.HTTP_400_BAD_REQUEST)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

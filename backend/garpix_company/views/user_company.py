@@ -24,7 +24,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
     queryset = UserCompany.objects.all()
     serializer_class = UserCompanySerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    search_fields = ['user__email']
+    search_fields = ['user__email', 'user__first_name', 'user__last_name']
     filterset_fields = ['is_blocked', 'role']
 
     def get_serializer_class(self):
@@ -72,7 +72,7 @@ class UserCompanyViewSet(GarpixCompanyViewSetMixin,
         self.check_object_permissions(request, instance)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        result, message = instance.change_role(role=serializer.data['role'])
+        result, message = instance.change_role(role=serializer.validated_data['role'])
         if result:
             return Response({'status': _('success')}, status=status.HTTP_200_OK)
         return Response({'non_field_error': [message]}, status=status.HTTP_400_BAD_REQUEST)

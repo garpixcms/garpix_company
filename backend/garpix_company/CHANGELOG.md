@@ -1,3 +1,9 @@
+### 2.8.2 (12.05.2023)
+
+- Fixed bug with `change_role` endpoint
+- `first_name`, `last_name` company user search added
+- `role` filter added to invites list endpoint
+
 ### 2.8.0-2.8.1 (11.05.2023)
 
 - `GARPIX_COMPANY_INVITE_NOT_USERS` setting added (see `Readme.md)
