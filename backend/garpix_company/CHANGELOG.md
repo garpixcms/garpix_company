@@ -1,3 +1,7 @@
+### 2.8.3 (22.05.2023)
+
+- Fixed bug with `invite` endpoint
+
 ### 2.8.2 (12.05.2023)
 
 - Fixed bug with `change_role` endpoint

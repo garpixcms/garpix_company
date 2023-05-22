@@ -25,3 +25,6 @@ class ChangeUserRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserCompany
         fields = ('role',)
+        extra_kwargs = {
+            'role': {'required': False}
+        }

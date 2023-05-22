@@ -30,14 +30,14 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
         User = get_user_model()
         Company = get_company_model()
         company_id = self.context.get("company_id")
-        if not getattr(settings, 'GARPIX_COMPANY_INVITE_NOT_USERS', False):
-            try:
-                user = User.objects.get(email=value)
-                if not Company.check_user_companies_limit(user):
-                    raise ValidationError(_('У пользователя с указанным email превышен лимит количества компаний'))
-                if UserCompany.active_objects.filter(user=user, company_id=company_id).exists():
-                    raise ValidationError(_('Указанный пользователь уже является сотрудником компании'))
-            except User.DoesNotExist:
+        try:
+            user = User.objects.get(email=value)
+            if not Company.check_user_companies_limit(user):
+                raise ValidationError(_('У пользователя с указанным email превышен лимит количества компаний'))
+            if UserCompany.active_objects.filter(user=user, company_id=company_id).exists():
+                raise ValidationError(_('Указанный пользователь уже является сотрудником компании'))
+        except User.DoesNotExist:
+            if getattr(settings, 'GARPIX_COMPANY_INVITE_NOT_USERS', False):
                 raise ValidationError(_('Пользователь с указанным email не зарегистрирован'))
         return value
 
@@ -51,13 +51,16 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
+        User = get_user_model()
         validated_data = super().validate(data)
         user = validated_data.get('user', None)
         email = validated_data.get('email', None)
         if not user and not email:
             raise ValidationError(_('Укажите email или id пользователя'))
         if user:
-            data['email'] = user.email
+            validated_data['email'] = user.email
+        elif not getattr(settings, 'GARPIX_COMPANY_INVITE_NOT_USERS', False):
+            validated_data['user'] = User.objects.filter(email=email).first()
         return data
 
     def create(self, validated_data):
