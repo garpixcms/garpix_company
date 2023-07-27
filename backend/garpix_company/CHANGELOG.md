@@ -10,7 +10,7 @@
 
 ### 2.8.0-2.8.1 (11.05.2023)
 
-- `GARPIX_COMPANY_INVITE_NOT_USERS` setting added (see `Readme.md)
+- `GARPIX_COMPANY_INVITE_NOT_USERS` setting added (see `Readme.md`)
 - `role` filter added to `company/{id}/user/` endpoint
 
 ### 2.7.0 (04.05.2023)

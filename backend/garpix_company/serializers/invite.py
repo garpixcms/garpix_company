@@ -37,7 +37,7 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
             if UserCompany.active_objects.filter(user=user, company_id=company_id).exists():
                 raise ValidationError(_('Указанный пользователь уже является сотрудником компании'))
         except User.DoesNotExist:
-            if getattr(settings, 'GARPIX_COMPANY_INVITE_NOT_USERS', False):
+            if not getattr(settings, 'GARPIX_COMPANY_INVITE_NOT_USERS', False):
                 raise ValidationError(_('Пользователь с указанным email не зарегистрирован'))
         return value
 
@@ -59,7 +59,7 @@ class InviteToCompanySerializer(serializers.ModelSerializer):
             raise ValidationError(_('Укажите email или id пользователя'))
         if user:
             validated_data['email'] = user.email
-        elif not getattr(settings, 'GARPIX_COMPANY_INVITE_NOT_USERS', False):
+        else:
             validated_data['user'] = User.objects.filter(email=email).first()
         return data
 

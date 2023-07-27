@@ -20,8 +20,8 @@ class AbstractUserCompany(models.Model):
     """
     Модель участников. Связка между компанией и пользователем.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_companies', verbose_name=_('Пользователь'))
-    company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, related_name='user_companies', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('Пользователь'))
+    company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Дата/время создания"))
     is_blocked = models.BooleanField(default=False, verbose_name=_("Заблокирован администратором компании"))
     role = models.ForeignKey(settings.GARPIX_COMPANY_ROLE_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
@@ -81,10 +81,13 @@ class AbstractUserCompany(models.Model):
         self.role = role
         self.save()
         return True, None
-#
-#
-# class UserCompany(AbstractUserCompany):
-#     pass
+
+
+class UserCompany(AbstractUserCompany):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_companies', verbose_name=_('Пользователь'))
+    company = models.ForeignKey(settings.GARPIX_COMPANY_MODEL, related_name='user_companies', on_delete=models.CASCADE)
+    role = models.ForeignKey(settings.GARPIX_COMPANY_ROLE_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
+                             related_name='user_company_roles', verbose_name=_('Роль в компании'))
 
 
 def get_user_company_model():

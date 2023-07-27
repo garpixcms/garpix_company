@@ -24,15 +24,15 @@ class AbstractCompany(models.Model):
 
     title = models.CharField(max_length=255, verbose_name=_('Название'))
     full_title = models.CharField(max_length=255, verbose_name=_('Полное название'))
-    inn = models.CharField(max_length=15, verbose_name=_('ИНН'))
+    inn = models.CharField(max_length=15, null=True, blank=True, verbose_name=_('ИНН'))
     ogrn = models.CharField(max_length=15, null=True, blank=True, verbose_name=_('ОГРН'))
     kpp = models.CharField(max_length=50, null=True, blank=True, verbose_name=_("КПП"))
     bank_title = models.CharField(max_length=100, null=True, blank=True, verbose_name=_("Наименование банка"))
     bic = models.CharField(max_length=100, null=True, blank=True, verbose_name=_("БИК банка"))
     schet = models.CharField(max_length=50, null=True, blank=True, verbose_name=_("Номер счета"))
     korschet = models.CharField(max_length=50, null=True, blank=True, verbose_name=_("Кор. счет"))
-    ur_address = models.CharField(max_length=300, verbose_name=_("Юридический адрес"))
-    fact_address = models.CharField(max_length=300, verbose_name=_("Фактический адрес"))
+    ur_address = models.CharField(max_length=300, null=True, blank=True, verbose_name=_("Юридический адрес"))
+    fact_address = models.CharField(max_length=300, null=True, blank=True, verbose_name=_("Фактический адрес"))
     status = FSMField(default=COMPANY_STATUS.ACTIVE, choices=COMPANY_STATUS.CHOICES, verbose_name=_('Статус'))
     participants = models.ManyToManyField(User, through=settings.GARPIX_USER_COMPANY_MODEL,
                                           verbose_name=_('Участники компании'))
@@ -120,8 +120,10 @@ class AbstractCompany(models.Model):
 
     @property
     def owner(self):
+        UserCompany = get_user_company_model()
         company_role_service = UserCompanyRoleService()
-        user_model_instance = self.user_companies.filter(role=company_role_service.get_owner_role()).first()
+        user_model_instance = UserCompany.active_objects.select_related('user').filter(
+            role=company_role_service.get_owner_role(), company=self).first()
         if user_model_instance:
             return user_model_instance.user
         return None
