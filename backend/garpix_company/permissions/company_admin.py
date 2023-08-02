@@ -20,5 +20,5 @@ class CompanyAdminOnly(permissions.BasePermission):
                 role=company_role_service.get_admin_role(), company=obj).values_list('user', flat=True)
         if isinstance(obj, InviteToCompany) or isinstance(obj, UserCompany):
             return request.user.is_authenticated and UserCompany.active_objects.filter(
-                role=company_role_service.get_admin_role(), user=request.user, company=obj)
+                role=company_role_service.get_admin_role(), user=request.user, company=obj.company)
         return False
