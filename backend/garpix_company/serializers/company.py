@@ -84,6 +84,13 @@ class ChangeOwnerCompanySerializer(serializers.ModelSerializer):
     new_owner = serializers.IntegerField()
     stay_in_company = serializers.BooleanField(required=False)
 
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        company_role_service = UserCompanyRoleService()
+        if attrs.get('stay_in_company', False) and 'role' in attrs and attrs['role'] == company_role_service.get_owner_role():
+            raise ValidationError({'role': _('Выберите корректную роль. Нельзя остаться владельцем при смене')})
+        return attrs
+
     class Meta:
         model = UserCompany
         fields = ('new_owner', 'role', 'stay_in_company')
