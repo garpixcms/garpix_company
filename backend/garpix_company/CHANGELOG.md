@@ -1,3 +1,7 @@
+### 2.9.0-rc5 (16.10.2023)
+
+- Invite object added to `invite_confirmation_link` Company model method
+
 ### 2.8.3 (22.05.2023)
 
 - Fixed bug with `invite` endpoint

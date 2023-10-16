@@ -95,7 +95,7 @@ class InviteToCompany(models.Model):
             self.token = get_random_string(16)
             email = self.email if self.email else self.user.email
             Notify.send(settings.NOTIFY_EVENT_INVITE_TO_COMPANY, {
-                'invite_confirmation_link': Company.invite_confirmation_link(self.token),
+                'invite_confirmation_link': Company.invite_confirmation_link(self.token, self),
                 'company_title': str(self.company),
                 'invite': self
             }, email=str(email))

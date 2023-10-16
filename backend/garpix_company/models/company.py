@@ -115,7 +115,7 @@ class AbstractCompany(models.Model):
         return True
 
     @classmethod
-    def invite_confirmation_link(cls, token):
+    def invite_confirmation_link(cls, token, invite=None):
         return f'{settings.SITE_URL}invite/{token}'
 
     @property
