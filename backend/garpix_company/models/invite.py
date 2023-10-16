@@ -5,12 +5,10 @@ from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django_fsm import FSMField, transition, can_proceed
-from garpix_notify.models import Notify
 from garpix_utils.string import get_random_string
 
 from garpix_company.helpers import CHOICES_INVITE_STATUS_ENUM
 from garpix_company.managers.invite import CreatedInviteManager
-from garpix_company.models.company import get_company_model
 from garpix_company.models.user_company import get_user_company_model
 
 User = get_user_model()
@@ -83,7 +81,6 @@ class InviteToCompany(models.Model):
         self.save()
 
     def save(self, *args, **kwargs):
-        Company = get_company_model()
         is_new = self.pk is None
         search_data = {'company': self.company}
         if self.user:
@@ -94,11 +91,7 @@ class InviteToCompany(models.Model):
         if is_new:
             self.token = get_random_string(16)
             email = self.email if self.email else self.user.email
-            Notify.send(settings.NOTIFY_EVENT_INVITE_TO_COMPANY, {
-                'invite_confirmation_link': Company.invite_confirmation_link(self.token, self),
-                'company_title': str(self.company),
-                'invite': self
-            }, email=str(email))
+            self.company.send_invite_notification(invite=self, email=email)
         super().save(*args, **kwargs)
 
     def __str__(self):

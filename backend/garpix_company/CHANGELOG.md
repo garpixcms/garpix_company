@@ -1,3 +1,7 @@
+### 2.9.0-rc6 (16.10.2023)
+
+- Method `send_invite_notification` added to Company model
+
 ### 2.9.0-rc5 (16.10.2023)
 
 - Invite object added to `invite_confirmation_link` Company model method

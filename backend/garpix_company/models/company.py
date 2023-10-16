@@ -8,7 +8,7 @@ from garpix_company.managers.company import CompanyActiveManager
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.apps import apps as django_apps
-
+from garpix_notify.models import Notify
 from garpix_company.models.user_company import get_user_company_model
 from garpix_company.services.role_service import UserCompanyRoleService
 
@@ -117,6 +117,13 @@ class AbstractCompany(models.Model):
     @classmethod
     def invite_confirmation_link(cls, token, invite=None):
         return f'{settings.SITE_URL}invite/{token}'
+
+    def send_invite_notification(self, invite, email):
+        Notify.send(settings.NOTIFY_EVENT_INVITE_TO_COMPANY, {
+            'invite_confirmation_link': self.invite_confirmation_link(invite.token, self),
+            'company_title': str(self),
+            'invite': invite
+        }, email=str(email))
 
     @property
     def owner(self):
