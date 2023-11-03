@@ -75,8 +75,9 @@ class AbstractCompany(models.Model):
         return self.title
 
     def delete(self, using=None, keep_parents=False):
-        self.comp_deleted()
-        self.save()
+        if self.status != COMPANY_STATUS_ENUM.DELETED:
+            self.comp_deleted()
+            self.save()
 
     def hard_delete(self):
         super().delete()

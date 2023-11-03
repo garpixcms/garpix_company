@@ -1,3 +1,7 @@
+### 2.9.0-rc7 (03.11.2023)
+
+- Company deleting bug fixed
+
 ### 2.9.0-rc6 (16.10.2023)
 
 - Method `send_invite_notification` added to Company model
