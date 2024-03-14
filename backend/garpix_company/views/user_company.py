@@ -9,7 +9,7 @@ from garpix_company.models import get_company_model
 from garpix_company.models.user_company import get_user_company_model
 from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly
 from garpix_company.serializers.user_company import UserCompanySerializer, ChangeUserRoleSerializer
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 UserCompany = get_user_company_model()

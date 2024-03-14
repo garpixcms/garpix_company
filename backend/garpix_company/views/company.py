@@ -15,7 +15,7 @@ from garpix_company.models.user_role import get_company_role_model
 from garpix_company.permissions import CompanyAdminOnly, CompanyOwnerOnly, CompanyUserOnly
 from garpix_company.serializers import CompanySerializer, CreateCompanySerializer, UpdateCompanySerializer, \
     ChangeOwnerCompanySerializer, InviteToCompanySerializer, InvitesSerializer
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 Company = get_company_model()
 CompanyRole = get_company_role_model()

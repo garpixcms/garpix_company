@@ -9,7 +9,7 @@ from rest_framework.exceptions import ValidationError
 from garpix_company.models import get_user_company_model
 from garpix_company.models.company import get_company_model
 from garpix_company.models.invite import InviteToCompany
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from garpix_company.models.user_role import get_company_role_model
 
 

@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = ">=3.1"
-garpixcms = "==3.43.0"
+django = "==4.2"
+garpixcms = "==4.6.0-rc24"
 django-fsm = "*"
 drf-nested-routers = "*"
 django-filter = "==21.1"
