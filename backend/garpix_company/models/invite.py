@@ -31,8 +31,8 @@ class InviteToCompany(models.Model):
     created_objects = CreatedInviteManager()
 
     class Meta:
-        verbose_name = _('Инвайт в компанию')
-        verbose_name_plural = _('Инвайты в компании')
+        verbose_name = 'Инвайт в компанию | Invite to company'
+        verbose_name_plural = 'Инвайты в компании | Invites to companies'
         ordering = ['-id']
 
     @transition(field=status, source=CHOICES_INVITE_STATUS.CREATED, target=CHOICES_INVITE_STATUS.ACCEPTED)

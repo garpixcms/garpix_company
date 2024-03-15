@@ -42,8 +42,8 @@ class AbstractCompany(models.Model):
     active_objects = CompanyActiveManager()
 
     class Meta:
-        verbose_name = _('Компания')
-        verbose_name_plural = _('Компании')
+        verbose_name = 'Компания | Company'
+        verbose_name_plural = 'Компании | Companies'
         ordering = ['-id']
         abstract = True
 

@@ -30,8 +30,8 @@ class AbstractUserCompanyRole(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = _('Роль в компании')
-        verbose_name_plural = _('Роли в компаниях')
+        verbose_name = 'Роль в компании | User company role'
+        verbose_name_plural = 'Роли в компаниях | User companies roles'
         ordering = ['-id']
         abstract = True
 

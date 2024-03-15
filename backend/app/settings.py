@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'eqator',
     'garpix_admin_lock',
     'garpix_page',
+    'garpix_user',
     'garpix_menu',
     'garpix_notify',
     'garpix_package',
@@ -63,3 +64,7 @@ GARPIX_COMPANY_ROLE_SERIALIZER = 'garpix_company.serializers.role.GarpixCompanyR
 GARPIX_COMPANY_INVITE_NOT_USERS = True
 
 SITE_URL = '127.0.0.1:8000'
+
+ISO_LOGS_PRODUCT = 'garpix_company'
+IB_ISO_LOGS_NAME = 'garpix_company_ib'
+SYSTEM_ISO_LOGS_NAME = 'garpix_company_system'

@@ -156,11 +156,11 @@ See `garpix_company/tests/test_company.py` for examples.
 
 # Changelog
 
-Смотри [CHANGELOG.md](CHANGELOG.md).
+Смотри [CHANGELOG.md](https://github.com/garpixcms/garpix_company/blob/master/CHANGELOG.md).
 
 # Contributing
 
-Смотри [CONTRIBUTING.md](CONTRIBUTING.md).
+Смотри [CONTRIBUTING.md](https://github.com/garpixcms/garpix_company/blob/master/CONTRIBUTING.md).
 
 # License
 

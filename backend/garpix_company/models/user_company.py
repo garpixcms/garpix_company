@@ -32,8 +32,8 @@ class AbstractUserCompany(models.Model):
 
     class Meta:
         unique_together = ("user", "company")
-        verbose_name = _('Пользователь компании')
-        verbose_name_plural = _('Пользователи компании')
+        verbose_name = 'Пользователь компании | Company user'
+        verbose_name_plural = 'Пользователи компании | Company users'
         abstract = True
 
     def block(self):
