@@ -35,18 +35,25 @@ class InviteToCompany(models.Model):
         verbose_name_plural = 'Инвайты в компании | Invites to companies'
         ordering = ['-id']
 
-    @transition(field=status, source=CHOICES_INVITE_STATUS.CREATED, target=CHOICES_INVITE_STATUS.ACCEPTED)
-    def _in_accept(self, user):
+    def __str__(self):
+        return f'Инвайт в компанию {str(self.company)} для {self.email}'
 
-        UserCompany.objects.create(
-            company=self.company,
-            user=user,
-            role=self.role
-        )
+    def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        search_data = {'company': self.company}
+        if self.user:
+            search_data.update({'user': self.user})
+        else:
+            search_data.update({'email': self.email})
 
-    @transition(field=status, source=CHOICES_INVITE_STATUS.CREATED, target=CHOICES_INVITE_STATUS.DECLINED)
-    def _in_decline(self):
-        pass
+        self.__class__.objects.filter(**search_data).update(status=self.CHOICES_INVITE_STATUS.DECLINED)
+
+        if is_new:
+            self.token = get_random_string(16)
+            email = self.email if self.email else self.user.email
+            self.company.send_invite_notification(invite=self, email=email)
+
+        super().save(*args, **kwargs)
 
     @property
     def can_decline(self):
@@ -80,19 +87,14 @@ class InviteToCompany(models.Model):
         self._in_decline()
         self.save()
 
-    def save(self, *args, **kwargs):
-        is_new = self.pk is None
-        search_data = {'company': self.company}
-        if self.user:
-            search_data.update({'user': self.user})
-        else:
-            search_data.update({'email': self.email})
-        self.__class__.objects.filter(**search_data).update(status=self.CHOICES_INVITE_STATUS.DECLINED)
-        if is_new:
-            self.token = get_random_string(16)
-            email = self.email if self.email else self.user.email
-            self.company.send_invite_notification(invite=self, email=email)
-        super().save(*args, **kwargs)
+    @transition(field=status, source=CHOICES_INVITE_STATUS.CREATED, target=CHOICES_INVITE_STATUS.ACCEPTED)
+    def _in_accept(self, user):
+        UserCompany.objects.create(
+            company=self.company,
+            user=user,
+            role=self.role
+        )
 
-    def __str__(self):
-        return f'Инвайт в компанию {str(self.company)} для {self.email}'
+    @transition(field=status, source=CHOICES_INVITE_STATUS.CREATED, target=CHOICES_INVITE_STATUS.DECLINED)
+    def _in_decline(self):
+        pass

@@ -47,17 +47,26 @@ class AbstractCompany(models.Model):
         ordering = ['-id']
         abstract = True
 
-    @transition(field=status, source=COMPANY_STATUS.BANNED, target=COMPANY_STATUS.ACTIVE)
-    def comp_active(self):
-        pass
+    def __str__(self):
+        return self.title
 
-    @transition(field=status, source=COMPANY_STATUS.ACTIVE, target=COMPANY_STATUS.BANNED)
-    def comp_banned(self):
-        pass
+    def delete(self, using=None, keep_parents=False):
+        if self.status != COMPANY_STATUS_ENUM.DELETED:
+            self.comp_deleted()
+            self.save()
 
-    @transition(field=status, source=[COMPANY_STATUS.ACTIVE, COMPANY_STATUS.BANNED], target=COMPANY_STATUS.DELETED)
-    def comp_deleted(self):
-        pass
+    def hard_delete(self):
+        super().delete()
+
+    @property
+    def owner(self):
+        UserCompany = get_user_company_model()
+        company_role_service = UserCompanyRoleService()
+        user_model_instance = UserCompany.active_objects.select_related('user').filter(
+            role=company_role_service.get_owner_role(), company=self).first()
+        if user_model_instance:
+            return user_model_instance.user
+        return None
 
     @property
     def can_banned(self):
@@ -71,16 +80,17 @@ class AbstractCompany(models.Model):
     def can_active(self):
         return can_proceed(self.comp_active)
 
-    def __str__(self):
-        return self.title
+    @transition(field=status, source=COMPANY_STATUS.BANNED, target=COMPANY_STATUS.ACTIVE)
+    def comp_active(self):
+        pass
 
-    def delete(self, using=None, keep_parents=False):
-        if self.status != COMPANY_STATUS_ENUM.DELETED:
-            self.comp_deleted()
-            self.save()
+    @transition(field=status, source=COMPANY_STATUS.ACTIVE, target=COMPANY_STATUS.BANNED)
+    def comp_banned(self):
+        pass
 
-    def hard_delete(self):
-        super().delete()
+    @transition(field=status, source=[COMPANY_STATUS.ACTIVE, COMPANY_STATUS.BANNED], target=COMPANY_STATUS.DELETED)
+    def comp_deleted(self):
+        pass
 
     def change_owner(self, data, current_user):
         UserCompany = get_user_company_model()
@@ -111,14 +121,6 @@ class AbstractCompany(models.Model):
         except UserCompany.DoesNotExist:
             return False, _('Пользователь с указанным id не является сотрудником компании')
 
-    @classmethod
-    def check_user_companies_limit(cls, user):
-        return True
-
-    @classmethod
-    def invite_confirmation_link(cls, token, invite=None):
-        return f'{settings.SITE_URL}invite/{token}'
-
     def send_invite_notification(self, invite, email):
         Notify.send(settings.NOTIFY_EVENT_INVITE_TO_COMPANY, {
             'invite_confirmation_link': self.invite_confirmation_link(invite.token, self),
@@ -126,15 +128,13 @@ class AbstractCompany(models.Model):
             'invite': invite
         }, email=str(email))
 
-    @property
-    def owner(self):
-        UserCompany = get_user_company_model()
-        company_role_service = UserCompanyRoleService()
-        user_model_instance = UserCompany.active_objects.select_related('user').filter(
-            role=company_role_service.get_owner_role(), company=self).first()
-        if user_model_instance:
-            return user_model_instance.user
-        return None
+    @classmethod
+    def check_user_companies_limit(cls, user):
+        return True
+
+    @classmethod
+    def invite_confirmation_link(cls, token, invite=None):
+        return f'{settings.SITE_URL}invite/{token}'
 
 
 def get_company_model():
