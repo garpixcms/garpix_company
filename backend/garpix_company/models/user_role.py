@@ -1,9 +1,8 @@
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.apps import apps as django_apps
+from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 
 class AbstractUserCompanyRole(models.Model):
@@ -20,20 +19,31 @@ class AbstractUserCompanyRole(models.Model):
     role_type = models.CharField(max_length=128, choices=ROLE_TYPE.choices, default=ROLE_TYPE.EMPLOYEE,
                                  verbose_name=_('Тип'))
 
-    def clean(self):
-        super().clean()
-        if self.role_type in [self.ROLE_TYPE.ADMIN, self.ROLE_TYPE.OWNER]:
-            if self.__class__.objects.filter(role_type=self.role_type).exists():
-                raise ValidationError({'role_type': _(f'Недопустимо создание более одной роли с типом {dict(self.ROLE_TYPE.choices)[self.role_type]}')})
-
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name = 'Роль в компании | User company role'
         verbose_name_plural = 'Роли в компаниях | User companies roles'
         ordering = ['-id']
         abstract = True
+
+    def __str__(self):
+        return self.title
+
+    def clean(self):
+        super().clean()
+
+        self._validate_role_type_unique()
+
+    def _validate_role_type_unique(self):
+        if self.role_type not in {self.ROLE_TYPE.ADMIN, self.ROLE_TYPE.OWNER}:
+            return
+
+        qs = self.__class__.objects.filter(role_type=self.role_type)
+
+        if self.pk is not None:
+            qs = qs.exclude(pk=self.pk)
+
+        if qs.exists():
+            raise ValidationError({'role_type': _(f'Недопустимо создание более одной роли с типом {dict(self.ROLE_TYPE.choices)[self.role_type]}')})
 
 
 def get_company_role_model():
