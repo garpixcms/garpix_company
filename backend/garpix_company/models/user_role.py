@@ -45,6 +45,7 @@ class AbstractUserCompanyRole(models.Model):
         if qs.exists():
             raise ValidationError({'role_type': _(f'Недопустимо создание более одной роли с типом') + f' {self.role_type.label}'})
 
+
 def get_company_role_model():
     """
     Return the UserCompanyRole model that is active in this project.
