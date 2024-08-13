@@ -43,7 +43,7 @@ class AbstractUserCompanyRole(models.Model):
             qs = qs.exclude(pk=self.pk)
 
         if qs.exists():
-            raise ValidationError({'role_type': _(f'Недопустимо создание более одной роли с типом {dict(self.ROLE_TYPE.choices)[self.role_type]}')})
+            raise ValidationError({'role_type': _(f'Недопустимо создание более одной роли с типом') + f' {self.role_type.label}'})
 
 
 def get_company_role_model():
