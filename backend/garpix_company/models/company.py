@@ -100,7 +100,7 @@ class AbstractCompany(models.Model):
         if self.owner != current_user:
             return False, _('Действие доступно только для владельца компании')
         try:
-            user_company = UserCompany.objects.get(company=self, pk=int(new_owner_id))
+            user_company = UserCompany.objects.get(company=self, user=int(new_owner_id))
             if self.owner == user_company.user:
                 return False, _('Пользователь с указанным id уже является владельцем компании')
             if user_company.is_blocked:

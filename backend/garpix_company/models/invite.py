@@ -50,7 +50,7 @@ class InviteToCompany(models.Model):
 
         if is_new:
             self.token = get_random_string(16)
-            email = self.email if self.email else self.user.email
+            email = self.email or self.user.email
             self.company.send_invite_notification(invite=self, email=email)
 
         super().save(*args, **kwargs)
@@ -70,7 +70,7 @@ class InviteToCompany(models.Model):
         """
         try:
             with transaction.atomic():
-                user = self.user if self.user else User.objects.get(email=self.email)
+                user = self.user or User.objects.get(email=self.email)
                 self._in_accept(user)
                 self.save()
             return True, None

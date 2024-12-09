@@ -87,7 +87,7 @@ class ChangeOwnerCompanySerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         attrs = super().validate(attrs)
         company_role_service = UserCompanyRoleService()
-        if attrs.get('stay_in_company', False) and 'role' in attrs and attrs['role'] == company_role_service.get_owner_role():
+        if attrs.get('stay_in_company', False) and attrs.get('role', 'no_role') == company_role_service.get_owner_role():
             raise ValidationError({'role': _('Выберите корректную роль. Нельзя остаться владельцем при смене')})
         return attrs
 
